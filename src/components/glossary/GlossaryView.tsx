@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   ChevronRight,
   ChevronDown,
@@ -14,6 +15,8 @@ import {
   BarChart2,
   Megaphone,
   LayoutGrid,
+  SlidersHorizontal,
+  MoreHorizontal,
 } from 'lucide-react';
 import type { GlossaryFlowState, GlossaryFlowActions } from '../../hooks/useGlossaryFlow';
 import GlossaryTable from './GlossaryTable';
@@ -68,9 +71,30 @@ const NAV_GROUPS: NavGroup[] = [
 ];
 
 type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'rules' | 'showSuccessToast' | 'draftRule'> &
-  Pick<GlossaryFlowActions, 'openPanel' | 'closePanel' | 'updateDraft'>;
+  Pick<GlossaryFlowActions, 'openPanel' | 'closePanel' | 'updateDraft' | 'submitRule'>;
 
-export default function GlossaryView({ openPanel, isPanelOpen, closePanel, draftRule, updateDraft }: Props) {
+export default function GlossaryView({
+  openPanel,
+  isPanelOpen,
+  closePanel,
+  draftRule,
+  updateDraft,
+  submitRule,
+  rules,
+  showSuccessToast,
+}: Props) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const hasRules = rules.length > 0;
+  const filteredRules = searchQuery
+    ? rules.filter(
+        (r) =>
+          r.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          r.notes.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          r.translatedTerm.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : rules;
+
   return (
     <div className={styles.shell}>
       {/* ── App Bar ──────────────────────────────────────────── */}
@@ -190,51 +214,92 @@ export default function GlossaryView({ openPanel, isPanelOpen, closePanel, draft
                   </button>
                 ))}
               </div>
+
+              {/* Filter row — only when there are rules */}
+              {hasRules && (
+                <div className={styles.filterRow}>
+                  <div className={styles.filterLeft}>
+                    <label className={styles.searchWrap}>
+                      <Search size={14} className={styles.searchIcon} />
+                      <input
+                        className={styles.searchInput}
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </label>
+                    <button className={styles.filterBtn}>
+                      <SlidersHorizontal size={14} />
+                      Filter
+                    </button>
+                  </div>
+                  <div className={styles.filterRight}>
+                    <button className={styles.btnStandard} onClick={openPanel}>
+                      Create Rule
+                    </button>
+                    <button className={styles.btnStandard}>Upload .csv</button>
+                    <button className={styles.filterOverflowBtn}>
+                      <MoreHorizontal size={16} />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Body */}
-            <div className={styles.body}>
-              <div className={styles.emptyState}>
-                <div className={styles.emptyIconWrap}>
-                  {/* Layer 1 – dark rotated card background */}
-                  <div className={styles.iconCardBg} />
-                  {/* Layer 2 – tilted border frame (rotation baked into SVG path) */}
-                  <img src={translateFrame} alt="" className={styles.iconFrame} />
-                  {/* Layer 3 – translate symbol centered on top */}
-                  <img src={translateIcon} alt="" className={styles.iconSymbol} />
-                </div>
-                <div className={styles.emptyText}>
-                  <h2 className={styles.emptyHeading}>
-                    Improve translations with the glossary
-                  </h2>
-                  <p className={styles.emptyBody}>
-                    Create rules for frequently used terms in your experience and provide
-                    notes on how to translate them.{' '}
-                    <a href="#" className={styles.emptyLink}>
-                      Learn More
-                    </a>
-                  </p>
-                </div>
-                <div className={styles.emptyActions}>
-                  <button className={styles.btnStandard} onClick={openPanel}>
-                    Create Rule
-                  </button>
-                  <button className={styles.btnStandard}>Upload .csv</button>
+            {/* Body — empty state or table */}
+            {hasRules ? (
+              <div className={styles.bodyTable}>
+                <GlossaryTable rules={filteredRules} />
+              </div>
+            ) : (
+              <div className={styles.body}>
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyIconWrap}>
+                    <div className={styles.iconCardBg} />
+                    <img src={translateFrame} alt="" className={styles.iconFrame} />
+                    <img src={translateIcon} alt="" className={styles.iconSymbol} />
+                  </div>
+                  <div className={styles.emptyText}>
+                    <h2 className={styles.emptyHeading}>
+                      Improve translations with the glossary
+                    </h2>
+                    <p className={styles.emptyBody}>
+                      Create rules for frequently used terms in your experience and provide
+                      notes on how to translate them.{' '}
+                      <a href="#" className={styles.emptyLink}>
+                        Learn More
+                      </a>
+                    </p>
+                  </div>
+                  <div className={styles.emptyActions}>
+                    <button className={styles.btnStandard} onClick={openPanel}>
+                      Create Rule
+                    </button>
+                    <button className={styles.btnStandard}>Upload .csv</button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Scaffolded sub-components (UI not yet built) */}
-      <GlossaryTable />
+      {/* ── Slide-in panel ───────────────────────────────────────── */}
       <CreateRulePanel
         isPanelOpen={isPanelOpen}
         closePanel={closePanel}
         draftRule={draftRule}
         updateDraft={updateDraft}
+        submitRule={submitRule}
       />
+
+      {/* ── Success toast ─────────────────────────────────────────── */}
+      {showSuccessToast && (
+        <div className={styles.toast}>
+          <span className={styles.toastText}>Created translation rule</span>
+        </div>
+      )}
     </div>
   );
 }

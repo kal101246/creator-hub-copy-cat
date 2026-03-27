@@ -494,3 +494,146 @@
   background: var(--shift-400);
   border-color: var(--shift-400);
 }
+
+/* ── Filter row (visible when rules exist) ───────────────────────── */
+.filterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px 0 0;
+}
+
+.filterLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  width: 280px;
+  padding: 0 12px;
+  border: 1px solid var(--shift-300);
+  border-radius: 9999px;
+  background: transparent;
+  cursor: text;
+  transition: border-color 0.15s;
+}
+
+.searchWrap:focus-within {
+  border-color: rgba(208, 217, 251, 0.3);
+}
+
+.searchIcon {
+  color: var(--content-muted);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 12px;
+  color: var(--content-emphasis);
+  min-width: 0;
+}
+
+.searchInput::placeholder {
+  color: var(--content-muted);
+}
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--shift-300);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--content-default);
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.filterBtn:hover {
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+}
+
+.filterRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterOverflowBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--content-muted);
+  border: 1px solid var(--shift-300);
+  transition: background 0.15s, color 0.15s;
+}
+
+.filterOverflowBtn:hover {
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+}
+
+/* ── Table body container ─────────────────────────────────────────── */
+.bodyTable {
+  flex: 1;
+  padding: 16px 32px 32px;
+  overflow-y: auto;
+}
+
+/* ── Success toast ────────────────────────────────────────────────── */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 4px 16px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  box-shadow:
+    0 0 0 1px rgba(4, 4, 8, 0.35),
+    0 2px 4px rgba(4, 4, 8, 0.25),
+    0 10px 20px rgba(4, 4, 8, 0.25);
+  animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toastText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #202227;
+  line-height: 1.4;
+}

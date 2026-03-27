@@ -1,0 +1,169 @@
+/* ── Table container ─────────────────────────────────────────────── */
+.table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header row ──────────────────────────────────────────────────── */
+.headerRow {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--shift-300);
+}
+
+.headerCell {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+  line-height: 1;
+  white-space: nowrap;
+  min-height: 48px;
+}
+
+/* ── Data rows ───────────────────────────────────────────────────── */
+.dataRow {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--shift-300);
+  min-height: 64px;
+  transition: background 0.1s;
+}
+
+.dataRow:hover {
+  background: rgba(208, 217, 251, 0.04);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  font-size: 14px;
+  color: var(--content-emphasis);
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+/* ── Column widths ───────────────────────────────────────────────── */
+.colTerm {
+  flex: 0 0 150px;
+  width: 150px;
+  max-width: 150px;
+}
+
+.colRule {
+  flex: 1;
+  min-width: 0;
+}
+
+.colDetails {
+  flex: 0 0 220px;
+  width: 220px;
+}
+
+.colNotes {
+  flex: 1;
+  min-width: 0;
+}
+
+.colActions {
+  flex: 0 0 56px;
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ── Term cell ───────────────────────────────────────────────────── */
+.termText {
+  font-size: 14px;
+  color: var(--content-emphasis);
+  font-weight: 400;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+/* ── Translation rule cell ───────────────────────────────────────── */
+.ruleText {
+  font-size: 14px;
+  color: var(--content-emphasis);
+  font-weight: 400;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.ruleTextBold {
+  font-weight: 700;
+}
+
+/* ── Details cell ────────────────────────────────────────────────── */
+.pillGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: rgba(208, 217, 251, 0.12);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ── Notes cell ──────────────────────────────────────────────────── */
+.notesText {
+  font-size: 14px;
+  color: var(--content-emphasis);
+  font-weight: 400;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Overflow button ─────────────────────────────────────────────── */
+.overflowBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--content-muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.overflowBtn:hover {
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+}
+
+/* ── Empty table state ───────────────────────────────────────────── */
+.emptyRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  font-size: 14px;
+  color: var(--content-muted);
+}

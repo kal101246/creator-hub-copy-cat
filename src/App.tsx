@@ -13,6 +13,7 @@ function App() {
       closePanel={flow.closePanel}
       draftRule={flow.draftRule}
       updateDraft={flow.updateDraft}
+      submitRule={flow.submitRule}
     />
   );
 }

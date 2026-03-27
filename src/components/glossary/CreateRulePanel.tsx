@@ -127,13 +127,14 @@ function TargetLanguagesField({ value, onChange }: TargetLanguagesFieldProps) {
 // ─── Main panel ───────────────────────────────────────────────────────────────
 
 type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'draftRule'> &
-  Pick<GlossaryFlowActions, 'closePanel' | 'updateDraft'>;
+  Pick<GlossaryFlowActions, 'closePanel' | 'updateDraft' | 'submitRule'>;
 
 export default function CreateRulePanel({
   isPanelOpen,
   closePanel,
   draftRule,
   updateDraft,
+  submitRule,
 }: Props) {
   const [isRendered, setIsRendered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -314,7 +315,7 @@ export default function CreateRulePanel({
         <div className={styles.actions}>
           <div className={styles.actionsDivider} />
           <div className={styles.actionsRow}>
-            <button className={styles.btnSave}>Save</button>
+            <button className={styles.btnSave} onClick={submitRule}>Save</button>
             <button className={styles.btnCancel} onClick={closePanel}>
               Cancel
             </button>

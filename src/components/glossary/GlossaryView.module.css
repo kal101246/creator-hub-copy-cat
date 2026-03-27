@@ -501,7 +501,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 16px 0 0;
+  padding: 24px 0 20px;
 }
 
 .filterLeft {
@@ -594,7 +594,7 @@
 /* ── Table body container ─────────────────────────────────────────── */
 .bodyTable {
   flex: 1;
-  padding: 16px 32px 32px;
+  padding: 0 32px 32px;
   overflow-y: auto;
 }
 

@@ -21,6 +21,7 @@ import {
 import type { GlossaryFlowState, GlossaryFlowActions } from '../../hooks/useGlossaryFlow';
 import GlossaryTable from './GlossaryTable';
 import CreateRulePanel from './CreateRulePanel';
+import DeleteRuleModal from './DeleteRuleModal';
 import styles from './GlossaryView.module.css';
 import avatarImg from '../../assets/avatar.png';
 import translateIcon from '../../assets/translate_icon.svg';
@@ -70,18 +71,37 @@ const NAV_GROUPS: NavGroup[] = [
   { label: 'Promotion', hasChildren: true },
 ];
 
-type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'rules' | 'showSuccessToast' | 'draftRule'> &
-  Pick<GlossaryFlowActions, 'openPanel' | 'closePanel' | 'updateDraft' | 'submitRule'>;
+type Props = Pick<
+  GlossaryFlowState,
+  'isPanelOpen' | 'isEditing' | 'rules' | 'showSuccessToast' | 'draftRule' | 'isDeleteModalOpen'
+> &
+  Pick<
+    GlossaryFlowActions,
+    | 'openPanel'
+    | 'closePanel'
+    | 'updateDraft'
+    | 'submitRule'
+    | 'editRule'
+    | 'openDeleteModal'
+    | 'closeDeleteModal'
+    | 'deleteRule'
+  >;
 
 export default function GlossaryView({
   openPanel,
   isPanelOpen,
+  isEditing,
   closePanel,
   draftRule,
   updateDraft,
   submitRule,
+  editRule,
+  openDeleteModal,
+  closeDeleteModal,
+  deleteRule,
   rules,
   showSuccessToast,
+  isDeleteModalOpen,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -250,7 +270,11 @@ export default function GlossaryView({
             {/* Body — empty state or table */}
             {hasRules ? (
               <div className={styles.bodyTable}>
-                <GlossaryTable rules={filteredRules} />
+                <GlossaryTable
+                  rules={filteredRules}
+                  onEditRule={editRule}
+                  onDeleteRule={openDeleteModal}
+                />
               </div>
             ) : (
               <div className={styles.body}>
@@ -288,16 +312,27 @@ export default function GlossaryView({
       {/* ── Slide-in panel ───────────────────────────────────────── */}
       <CreateRulePanel
         isPanelOpen={isPanelOpen}
+        isEditing={isEditing}
         closePanel={closePanel}
         draftRule={draftRule}
         updateDraft={updateDraft}
         submitRule={submitRule}
       />
 
+      {/* ── Delete confirmation modal ─────────────────────────────── */}
+      {isDeleteModalOpen && (
+        <DeleteRuleModal
+          closeDeleteModal={closeDeleteModal}
+          deleteRule={deleteRule}
+        />
+      )}
+
       {/* ── Success toast ─────────────────────────────────────────── */}
       {showSuccessToast && (
         <div className={styles.toast}>
-          <span className={styles.toastText}>Created translation rule</span>
+          <span className={styles.toastText}>
+            {isEditing ? 'Translation rule updated' : 'Created translation rule'}
+          </span>
         </div>
       )}
     </div>

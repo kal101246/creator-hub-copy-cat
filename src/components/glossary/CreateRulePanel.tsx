@@ -126,7 +126,7 @@ function TargetLanguagesField({ value, onChange }: TargetLanguagesFieldProps) {
 
 // ─── Main panel ───────────────────────────────────────────────────────────────
 
-type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'draftRule'> &
+type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'draftRule' | 'isEditing'> &
   Pick<GlossaryFlowActions, 'closePanel' | 'updateDraft' | 'submitRule'>;
 
 export default function CreateRulePanel({
@@ -135,6 +135,7 @@ export default function CreateRulePanel({
   draftRule,
   updateDraft,
   submitRule,
+  isEditing,
 }: Props) {
   const [isRendered, setIsRendered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -180,11 +181,11 @@ export default function CreateRulePanel({
         className={`${styles.panel} ${isOpen ? styles.panelOpen : ''}`}
         role="dialog"
         aria-modal="true"
-        aria-label="Create rule"
+        aria-label={isEditing ? 'Edit rule' : 'Create rule'}
       >
         {/* ── Header ───────────────────────────────────────────── */}
         <div className={styles.header}>
-          <h2 className={styles.title}>Create rule</h2>
+          <h2 className={styles.title}>{isEditing ? 'Edit rule' : 'Create rule'}</h2>
           <button className={styles.closeBtn} onClick={closePanel} aria-label="Close panel">
             <X size={20} strokeWidth={2} />
           </button>

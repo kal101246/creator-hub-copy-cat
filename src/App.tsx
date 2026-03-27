@@ -11,6 +11,8 @@ function App() {
       showSuccessToast={flow.showSuccessToast}
       openPanel={flow.openPanel}
       closePanel={flow.closePanel}
+      draftRule={flow.draftRule}
+      updateDraft={flow.updateDraft}
     />
   );
 }

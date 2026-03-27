@@ -67,10 +67,10 @@ const NAV_GROUPS: NavGroup[] = [
   { label: 'Promotion', hasChildren: true },
 ];
 
-type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'rules' | 'showSuccessToast'> &
-  Pick<GlossaryFlowActions, 'openPanel' | 'closePanel'>;
+type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'rules' | 'showSuccessToast' | 'draftRule'> &
+  Pick<GlossaryFlowActions, 'openPanel' | 'closePanel' | 'updateDraft'>;
 
-export default function GlossaryView({ openPanel, isPanelOpen, closePanel }: Props) {
+export default function GlossaryView({ openPanel, isPanelOpen, closePanel, draftRule, updateDraft }: Props) {
   return (
     <div className={styles.shell}>
       {/* ── App Bar ──────────────────────────────────────────── */}
@@ -229,7 +229,12 @@ export default function GlossaryView({ openPanel, isPanelOpen, closePanel }: Pro
 
       {/* Scaffolded sub-components (UI not yet built) */}
       <GlossaryTable />
-      <CreateRulePanel isPanelOpen={isPanelOpen} closePanel={closePanel} />
+      <CreateRulePanel
+        isPanelOpen={isPanelOpen}
+        closePanel={closePanel}
+        draftRule={draftRule}
+        updateDraft={updateDraft}
+      />
     </div>
   );
 }

@@ -96,8 +96,295 @@
 .body {
   flex: 1;
   overflow-y: auto;
-  /* Form content will be added here in a later step */
 }
+
+/* ── Form content ────────────────────────────────────────────────── */
+.formContent {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Field group (label + input + optional helper) ───────────────── */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.required {
+  color: var(--content-default);
+}
+
+/* ── Text input ──────────────────────────────────────────────────── */
+.textInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.4);
+  border-radius: var(--radius-md);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.4;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.textInput::placeholder { color: var(--content-muted); }
+.textInput:focus        { border-color: var(--accent); }
+
+/* ── Helper text ─────────────────────────────────────────────────── */
+.helperText {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--content-default);
+  line-height: 1.4;
+}
+
+/* ── Toggle row ──────────────────────────────────────────────────── */
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 24px;
+}
+
+.toggleTrack {
+  width: 36px;
+  height: 20px;
+  border-radius: 9999px;
+  background: rgba(208, 217, 251, 0.16);
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.toggleOn {
+  background: var(--accent);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #fff;
+  pointer-events: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Slide the thumb when track has the .toggleOn class */
+.toggleOn .toggleThumb {
+  transform: translateX(16px);
+}
+
+.toggleLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  line-height: 1.4;
+  user-select: none;
+}
+
+/* ── Native select (Part of speech) ─────────────────────────────── */
+.selectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.selectInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 36px 0 12px;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.16);
+  border-radius: var(--radius-md);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.selectInput:focus    { border-color: var(--accent); }
+.selectInput option   { background: #191a1f; color: var(--content-emphasis); }
+
+.selectChevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--content-default);
+  display: flex;
+  align-items: center;
+}
+
+/* ── Target languages multi-select ──────────────────────────────── */
+.multiSelectContainer {
+  position: relative;
+  width: 100%;
+}
+
+.multiSelectField {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.16);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  gap: 4px;
+  transition: border-color 0.15s;
+}
+
+.multiSelectField:hover     { border-color: rgba(208, 217, 251, 0.3); }
+.multiSelectFieldOpen       { border-color: var(--accent); }
+
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  align-items: center;
+  min-height: 28px;
+}
+
+.placeholder {
+  font-size: 14px;
+  color: var(--content-muted);
+  padding: 2px 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(208, 217, 251, 0.12);
+  border-radius: var(--radius-sm);
+  padding: 2px 4px 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+  white-space: nowrap;
+}
+
+.chipRemove {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--content-muted);
+  border-radius: 2px;
+  transition: color 0.1s, background 0.1s;
+}
+
+.chipRemove:hover {
+  color: var(--content-emphasis);
+  background: rgba(208, 217, 251, 0.1);
+}
+
+.multiSelectTrailing {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-left: 4px;
+}
+
+.clearBtn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--content-default);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.clearBtn:hover {
+  color: var(--content-emphasis);
+  background: var(--shift-300);
+}
+
+/* Dropdown list */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #1e1e26;
+  border: 1px solid rgba(208, 217, 251, 0.16);
+  border-radius: var(--radius-md);
+  z-index: 200;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--content-default);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.dropdownItem:hover        { background: var(--shift-300); color: var(--content-emphasis); }
+.dropdownItemSelected      { color: var(--content-emphasis); font-weight: 600; }
+
+/* ── Textarea (Notes) ────────────────────────────────────────────── */
+.textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.4);
+  border-radius: var(--radius-md);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.4;
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.textarea::placeholder { color: var(--content-muted); }
+.textarea:focus        { border-color: var(--accent); }
 
 /* ── Actions bar (80px, sticky bottom) ───────────────────────────── */
 .actions {

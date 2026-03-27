@@ -70,7 +70,7 @@ const NAV_GROUPS: NavGroup[] = [
 type Props = Pick<GlossaryFlowState, 'isPanelOpen' | 'rules' | 'showSuccessToast'> &
   Pick<GlossaryFlowActions, 'openPanel' | 'closePanel'>;
 
-export default function GlossaryView({ openPanel }: Props) {
+export default function GlossaryView({ openPanel, isPanelOpen, closePanel }: Props) {
   return (
     <div className={styles.shell}>
       {/* ── App Bar ──────────────────────────────────────────── */}
@@ -229,7 +229,7 @@ export default function GlossaryView({ openPanel }: Props) {
 
       {/* Scaffolded sub-components (UI not yet built) */}
       <GlossaryTable />
-      <CreateRulePanel />
+      <CreateRulePanel isPanelOpen={isPanelOpen} closePanel={closePanel} />
     </div>
   );
 }

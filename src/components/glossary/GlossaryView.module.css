@@ -1,0 +1,496 @@
+/* ── Shell ──────────────────────────────────────────────────────── */
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--surface-0);
+  overflow: hidden;
+}
+
+/* ── App Bar ─────────────────────────────────────────────────────── */
+.appBar {
+  height: 40px;
+  min-height: 40px;
+  background: var(--surface-0);
+  border-bottom: 1px solid var(--shift-300);
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.trafficLights {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  position: absolute;
+  left: 0;
+}
+
+.tl {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+}
+
+.tlClose  { background: #ff5f57; }
+.tlMin    { background: #febc2e; }
+.tlMax    { background: #28c840; }
+
+.appBarTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--content-default);
+  white-space: nowrap;
+}
+
+/* ── Viewport ────────────────────────────────────────────────────── */
+.viewport {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+.sidebar {
+  width: 288px;
+  min-width: 288px;
+  display: flex;
+  background: var(--surface-0);
+  border-right: 1px solid var(--shift-300);
+  overflow-y: auto;
+}
+
+/* Icon Rail (72px) */
+.iconRail {
+  width: 72px;
+  min-width: 72px;
+  border-right: 1px solid var(--shift-300);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+}
+
+.iconRailTop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.iconRailBottom {
+  margin-top: auto;
+}
+
+.iconRailBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--content-default);
+  transition: background 0.15s;
+}
+
+.iconRailBtn:hover {
+  background: var(--shift-300);
+}
+
+.iconRailActive {
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+}
+
+/* Nav Tree (216px) */
+.navTree {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.navBack {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--content-default);
+  cursor: pointer;
+  border-bottom: 1px solid var(--shift-300);
+}
+
+.navBack:hover { color: var(--content-emphasis); }
+
+.navBody {
+  padding: 8px 0;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--content-default);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  margin: 0 8px;
+  line-height: 1.4;
+}
+
+.navItem:hover {
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+}
+
+.navChevron {
+  color: var(--content-muted);
+  transition: transform 0.2s;
+}
+
+.navChevronOpen {
+  transform: rotate(90deg);
+}
+
+.navChildList {
+  padding: 2px 0;
+}
+
+.navChild {
+  display: block;
+  padding: 6px 16px 6px 28px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--content-muted);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  margin: 1px 8px;
+  line-height: 1.4;
+}
+
+.navChild:hover {
+  background: var(--shift-300);
+  color: var(--content-default);
+}
+
+.navChildActive {
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+  font-weight: 600;
+}
+
+/* ── Primary Pane ────────────────────────────────────────────────── */
+.primaryPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Header Bar ──────────────────────────────────────────────────── */
+.headerBar {
+  height: 72px;
+  min-height: 72px;
+  background: var(--surface-0);
+  border-bottom: 1px solid var(--shift-300);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.headerLeading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerMenuBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--content-default);
+  transition: background 0.15s;
+}
+
+.headerMenuBtn:hover { background: var(--shift-300); }
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  color: var(--content-default);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.breadcrumbItem:hover { color: var(--content-emphasis); }
+
+.breadcrumbSep {
+  color: var(--content-muted);
+  padding: 0 2px;
+  user-select: none;
+}
+
+.breadcrumbActive {
+  color: var(--content-emphasis);
+  font-weight: 700;
+  cursor: default;
+}
+
+.breadcrumbActive:hover { color: var(--content-emphasis); }
+
+.headerTrailing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.headerIconBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--content-default);
+  position: relative;
+  transition: background 0.15s;
+}
+
+.headerIconBtn:hover { background: var(--shift-300); }
+
+.headerBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  background: var(--status-badge);
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  object-fit: cover;
+  cursor: pointer;
+  margin-left: 4px;
+  display: block;
+}
+
+/* ── Content ─────────────────────────────────────────────────────── */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* ── Page Header ─────────────────────────────────────────────────── */
+.pageHeader {
+  padding: 0 32px;
+  border-bottom: 1px solid var(--shift-300);
+}
+
+.titleRow {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  letter-spacing: -0.24px;
+}
+
+.translateBtn {
+  height: 36px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+}
+
+.translateBtn:hover { background: var(--accent-hover); }
+
+/* Tab Bar */
+.tabBar {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+}
+
+.tab {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--content-muted);
+  position: relative;
+  transition: color 0.15s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+
+.tab:hover { color: var(--content-default); }
+
+.tabActive {
+  color: var(--content-emphasis);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}
+
+/* ── Body ────────────────────────────────────────────────────────── */
+.body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px;
+}
+
+/* ── Empty State ─────────────────────────────────────────────────── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  max-width: 480px;
+  width: 100%;
+}
+
+/* ── Empty state graphic ────────────────────────────────────────── */
+.emptyIconWrap {
+  width: 320px;
+  height: 180px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Shift slightly upward to match Figma's top:19px in a 180px frame */
+  margin-top: -8px;
+}
+
+/* Layer 1: dark background card, rotated -15° */
+.iconCardBg {
+  position: absolute;
+  width: 115px;
+  height: 115px;
+  border-radius: 16px;
+  background: #1c1c24;
+  transform: rotate(-15deg);
+}
+
+/* Layer 2: tilted frame border SVG (rotation already baked into path) */
+.iconFrame {
+  position: absolute;
+  width: 139px;
+  height: 139px;
+  pointer-events: none;
+}
+
+/* Layer 3: translate symbol, centered on top */
+.iconSymbol {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  pointer-events: none;
+}
+
+.emptyText {
+  padding: 0 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.emptyHeading {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+  margin-bottom: 8px;
+}
+
+.emptyBody {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--content-default);
+  line-height: 1.4;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.emptyLink {
+  text-decoration: underline;
+  color: var(--content-default);
+  cursor: pointer;
+}
+
+.emptyLink:hover { color: var(--content-emphasis); }
+
+.emptyActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* Standard button (dark ghost) */
+.btnStandard {
+  height: 36px;
+  padding: 0 16px;
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.btnStandard:hover {
+  background: var(--shift-400);
+  border-color: var(--shift-400);
+}

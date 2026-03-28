@@ -13,9 +13,10 @@
   min-height: 40px;
   background: var(--surface-0);
   border-bottom: 1px solid var(--shift-300);
-  display: flex;
+  /* 3-column grid: traffic lights | title (auto/centered) | spacer */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  position: relative;
 }
 
 .trafficLights {
@@ -23,8 +24,7 @@
   align-items: center;
   gap: 8px;
   padding: 0 16px;
-  position: absolute;
-  left: 0;
+  /* column 1 — stays left-aligned */
 }
 
 .tl {
@@ -37,14 +37,13 @@
 .tlMin    { background: #febc2e; }
 .tlMax    { background: #28c840; }
 
+/* column 2 — mathematically centered regardless of flanking content */
 .appBarTitle {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   font-size: 14px;
   font-weight: 600;
   color: var(--content-default);
   white-space: nowrap;
+  text-align: center;
 }
 
 /* ── Viewport ────────────────────────────────────────────────────── */
@@ -119,13 +118,15 @@
 .navBack {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 600;
+  gap: 8px;
+  height: 56px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--content-default);
   cursor: pointer;
   border-bottom: 1px solid var(--shift-300);
+  flex-shrink: 0;
 }
 
 .navBack:hover { color: var(--content-emphasis); }
@@ -138,13 +139,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 10px 16px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--content-default);
   cursor: pointer;
   border-radius: var(--radius-md);
-  margin: 0 8px;
+  margin: 0 4px;
   line-height: 1.4;
 }
 
@@ -168,13 +169,13 @@
 
 .navChild {
   display: block;
-  padding: 6px 16px 6px 28px;
+  padding: 8px 16px 8px 28px;
   font-size: 14px;
   font-weight: 400;
   color: var(--content-muted);
   cursor: pointer;
   border-radius: var(--radius-md);
-  margin: 1px 8px;
+  margin: 1px 4px;
   line-height: 1.4;
 }
 
@@ -202,7 +203,6 @@
   height: 72px;
   min-height: 72px;
   background: var(--surface-0);
-  border-bottom: 1px solid var(--shift-300);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -501,7 +501,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 24px 0 20px;
+  padding: 24px 32px 20px;
+  flex-shrink: 0;
 }
 
 .filterLeft {

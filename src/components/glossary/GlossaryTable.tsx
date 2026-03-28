@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import type { GlossaryRule } from '../../types/glossary';
 import styles from './GlossaryTable.module.css';
@@ -64,9 +65,10 @@ interface OverflowMenuProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onViewTranslations: () => void;
 }
 
-function OverflowMenu({ isOpen, onOpen, onClose, onEdit, onDelete }: OverflowMenuProps) {
+function OverflowMenu({ isOpen, onOpen, onClose, onEdit, onDelete, onViewTranslations }: OverflowMenuProps) {
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuPos, setMenuPos] = useState<MenuPos | null>(null);
@@ -125,7 +127,8 @@ function OverflowMenu({ isOpen, onOpen, onClose, onEdit, onDelete }: OverflowMen
             >
               Edit rule
             </button>
-            <button className={styles.menuItem} role="menuitem">
+            <button className={styles.menuItem} role="menuitem"
+              onClick={() => { onViewTranslations(); onClose(); }}>
               <span>View translation table</span>
               <span className={styles.menuItemSub}>filtered by this term</span>
             </button>
@@ -171,6 +174,7 @@ interface Props {
 
 export default function GlossaryTable({ rules, onEditRule, onDeleteRule }: Props) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   return (
     <div className={styles.table}>
@@ -232,6 +236,9 @@ export default function GlossaryTable({ rules, onEditRule, onDeleteRule }: Props
                 onClose={() => setOpenMenuId(null)}
                 onEdit={() => onEditRule(rule.id)}
                 onDelete={() => onDeleteRule(rule.id)}
+                onViewTranslations={() =>
+                  navigate(`/translate?search=${encodeURIComponent(rule.term)}`)
+                }
               />
             </div>
 

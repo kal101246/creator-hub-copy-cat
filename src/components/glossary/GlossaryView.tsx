@@ -1,20 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import LocalizationSettings from '../settings/LocalizationSettings';
 import {
   ChevronRight,
   ChevronDown,
   Search,
   Bell,
   AlignLeft,
-  Home,
-  Video,
-  User,
-  ShoppingBag,
-  Activity,
-  MessageSquare,
-  Gamepad2,
-  BarChart2,
-  Megaphone,
-  LayoutGrid,
   SlidersHorizontal,
   MoreHorizontal,
 } from 'lucide-react';
@@ -22,6 +14,7 @@ import type { GlossaryFlowState, GlossaryFlowActions } from '../../hooks/useGlos
 import GlossaryTable from './GlossaryTable';
 import CreateRulePanel from './CreateRulePanel';
 import DeleteRuleModal from './DeleteRuleModal';
+import IconRail from '../shared/IconRail';
 import styles from './GlossaryView.module.css';
 import avatarImg from '../../assets/avatar.png';
 import translateIcon from '../../assets/translate_icon.svg';
@@ -36,9 +29,7 @@ const TABS = [
   'Table Management',
 ] as const;
 
-const ACTIVE_TAB = 'Glossary';
-
-const ICON_RAIL_ITEMS = [Home, Video, User, ShoppingBag, Activity, MessageSquare, Gamepad2, BarChart2, Megaphone];
+type TabName = (typeof TABS)[number];
 
 interface NavGroup {
   label: string;
@@ -104,6 +95,8 @@ export default function GlossaryView({
   isDeleteModalOpen,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<TabName>('Glossary');
+  const navigate = useNavigate();
 
   const hasRules = rules.length > 0;
   const filteredRules = searchQuery
@@ -125,27 +118,15 @@ export default function GlossaryView({
           <span className={`${styles.tl} ${styles.tlMax}`} />
         </div>
         <span className={styles.appBarTitle}>Creator Hub</span>
+        <div aria-hidden="true" />
       </div>
 
       {/* ── Viewport ─────────────────────────────────────────── */}
       <div className={styles.viewport}>
         {/* ── Sidebar ──────────────────────────────────────── */}
         <div className={styles.sidebar}>
-          {/* Icon Rail */}
-          <div className={styles.iconRail}>
-            <div className={styles.iconRailTop}>
-              {ICON_RAIL_ITEMS.map((Icon, i) => (
-                <button key={i} className={styles.iconRailBtn}>
-                  <Icon size={18} />
-                </button>
-              ))}
-            </div>
-            <div className={styles.iconRailBottom}>
-              <button className={styles.iconRailBtn}>
-                <LayoutGrid size={18} />
-              </button>
-            </div>
-          </div>
+          {/* Shared icon rail */}
+          <IconRail />
 
           {/* Nav Tree */}
           <div className={styles.navTree}>
@@ -218,57 +199,60 @@ export default function GlossaryView({
 
           {/* Scrollable content */}
           <div className={styles.content}>
-            {/* Page Header */}
+            {/* Page Header — titleRow + tabs only; border-bottom sits under tabs */}
             <div className={styles.pageHeader}>
               <div className={styles.titleRow}>
                 <h1 className={styles.pageTitle}>Localization</h1>
-                <button className={styles.translateBtn}>Translate</button>
+                <button className={styles.translateBtn} onClick={() => navigate('/translate?tab=information')}>Translate</button>
               </div>
               <div className={styles.tabBar}>
                 {TABS.map((tab) => (
                   <button
                     key={tab}
-                    className={`${styles.tab} ${tab === ACTIVE_TAB ? styles.tabActive : ''}`}
+                    className={`${styles.tab} ${tab === activeTab ? styles.tabActive : ''}`}
+                    onClick={() => setActiveTab(tab)}
                   >
                     {tab}
                   </button>
                 ))}
               </div>
-
-              {/* Filter row — only when there are rules */}
-              {hasRules && (
-                <div className={styles.filterRow}>
-                  <div className={styles.filterLeft}>
-                    <label className={styles.searchWrap}>
-                      <Search size={14} className={styles.searchIcon} />
-                      <input
-                        className={styles.searchInput}
-                        type="text"
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                    </label>
-                    <button className={styles.filterBtn}>
-                      <SlidersHorizontal size={14} />
-                      Filter
-                    </button>
-                  </div>
-                  <div className={styles.filterRight}>
-                    <button className={styles.btnStandard} onClick={openPanel}>
-                      Create Rule
-                    </button>
-                    <button className={styles.btnStandard}>Upload .csv</button>
-                    <button className={styles.filterOverflowBtn}>
-                      <MoreHorizontal size={16} />
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Body — empty state or table */}
-            {hasRules ? (
+            {/* Filter row — outside pageHeader so the tab ruler stays full-width */}
+            {activeTab !== 'Settings' && hasRules && (
+              <div className={styles.filterRow}>
+                <div className={styles.filterLeft}>
+                  <label className={styles.searchWrap}>
+                    <Search size={14} className={styles.searchIcon} />
+                    <input
+                      className={styles.searchInput}
+                      type="text"
+                      placeholder="Search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </label>
+                  <button className={styles.filterBtn}>
+                    <SlidersHorizontal size={14} />
+                    Filter
+                  </button>
+                </div>
+                <div className={styles.filterRight}>
+                  <button className={styles.btnStandard} onClick={openPanel}>
+                    Create Rule
+                  </button>
+                  <button className={styles.btnStandard}>Upload .csv</button>
+                  <button className={styles.filterOverflowBtn}>
+                    <MoreHorizontal size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Body — settings tab OR glossary content */}
+            {activeTab === 'Settings' ? (
+              <LocalizationSettings />
+            ) : hasRules ? (
               <div className={styles.bodyTable}>
                 <GlossaryTable
                   rules={filteredRules}

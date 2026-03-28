@@ -1,0 +1,399 @@
+/* ─── Settings wrapper ───────────────────────────────────────────── */
+.settingsBody {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.settingsSections {
+  /* 32px top matches mt-8 from the tab-bar ruler to the first section title */
+  padding: 32px 32px 0;
+  flex: 1;
+}
+
+/* ─── Individual section ─────────────────────────────────────────── */
+.section {
+  /* 40px after a divider → section title; 24px before next divider */
+  padding: 40px 0 24px;
+}
+/* The very first section sits directly below settingsSections padding-top
+   — don't double-stack vertical space with the container's 32px */
+.section:first-child {
+  padding-top: 0;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  /* 20px gap between section heading and its first toggle/control row */
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.sectionTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+/* When sectionTitle is inside sectionTitleRow, remove its bottom margin */
+.sectionTitleRow .sectionTitle {
+  margin-bottom: 0;
+}
+
+/* ─── Horizontal divider ─────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  /* Softer than shift-300 (0.12) — guides the eye without distracting */
+  background: rgba(208, 217, 251, 0.07);
+}
+
+/* ─── Toggle rows ────────────────────────────────────────────────── */
+.sectionToggles {
+  display: flex;
+  flex-direction: column;
+  /* Tighter grouping — related settings feel closer together */
+  gap: 14px;
+}
+
+.toggleRow {
+  display: flex;
+  /* Center the switch knob relative to the full text block height */
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.toggleHintText {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--content-default);
+  /* leading-relaxed equivalent — 1.65 gives the line-height from spec */
+  line-height: 1.65;
+}
+
+.link {
+  color: var(--content-default);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+.link:hover {
+  color: var(--content-emphasis);
+}
+
+/* ─── Toggle switch (small variant — ~20% reduction from 44×26) ─── */
+.toggleSwitch {
+  position: relative;
+  width: 36px;
+  min-width: 36px;
+  height: 22px;
+  border-radius: 11px;
+  background: rgba(208, 217, 251, 0.20);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+.toggleSwitch:focus-visible {
+  outline: 2px solid rgba(0, 100, 224, 0.70);
+  outline-offset: 2px;
+}
+.toggleOn {
+  background: #0064e0;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0064e0;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+.toggleKnobOn {
+  /* width(36) - knob(16) - left(3) - rightGap(3) = 14px */
+  transform: translateX(14px);
+}
+
+/* ─── Beta badge ─────────────────────────────────────────────────── */
+.betaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px 0 8px;
+  border-radius: 12px;
+  background: rgba(208, 217, 251, 0.08);
+  border: 1px solid rgba(208, 217, 251, 0.18);
+  color: var(--content-default);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Clear row ──────────────────────────────────────────────────── */
+.clearRow {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.clearDropdownWrap {
+  display: flex;
+  flex-direction: column;
+  /* 14px gap so the helper text doesn't hug the dropdown box */
+  gap: 14px;
+  flex: 1;
+}
+
+/* Custom select container */
+.clearDropdownContainer {
+  position: relative;
+  height: 40px;
+  border: 1px solid rgba(208, 217, 251, 0.40);
+  border-radius: 8px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+}
+.clearDropdownContainer:focus-within {
+  border-color: rgba(208, 217, 251, 0.65);
+}
+
+.clearDropdownSelect {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 36px 0 12px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  z-index: 1;
+}
+.clearDropdownSelect option {
+  background: #1a1a20;
+  color: var(--content-emphasis);
+}
+
+.clearDropdownChevron {
+  position: absolute;
+  right: 10px;
+  color: var(--content-emphasis);
+  pointer-events: none;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.clearHelperText {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--content-default);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ─── Clear button ───────────────────────────────────────────────── */
+.clearBtn {
+  height: 40px;
+  padding: 0 20px;
+  background: rgba(208, 217, 251, 0.09);
+  border: 1px solid rgba(208, 217, 251, 0.20);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+  align-self: flex-start;
+}
+.clearBtn:hover {
+  background: rgba(208, 217, 251, 0.16);
+  border-color: rgba(208, 217, 251, 0.30);
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 68px;
+  min-height: 68px;
+  border-top: 1px solid var(--shift-300);
+  margin-top: auto;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footerCopy {
+  font-size: 13px;
+  color: var(--content-muted);
+  white-space: nowrap;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footerLink {
+  font-size: 13px;
+  color: var(--content-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footerLink:hover {
+  color: var(--content-emphasis);
+}
+
+.footerDot {
+  font-size: 13px;
+  color: var(--content-muted);
+  opacity: 0.5;
+  user-select: none;
+}
+
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footerSocials {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footerSocialBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--content-muted);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+.footerSocialBtn:hover {
+  color: var(--content-emphasis);
+  background: rgba(208, 217, 251, 0.08);
+}
+
+.footerLang {
+  font-size: 13px;
+  color: var(--content-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.footerLang:hover {
+  color: var(--content-emphasis);
+}
+
+/* ─── Clear confirmation modal ───────────────────────────────────── */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalCard {
+  background: #26262c;
+  border: 1px solid rgba(208, 217, 251, 0.15);
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  width: 480px;
+  max-width: calc(100vw - 48px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.60);
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.modalBody {
+  font-size: 14px;
+  color: var(--content-default);
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modalCancelBtn {
+  height: 36px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.20);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modalCancelBtn:hover {
+  background: rgba(208, 217, 251, 0.08);
+}
+
+.modalConfirmBtn {
+  height: 36px;
+  padding: 0 16px;
+  background: #df281f;
+  border: 1px solid transparent;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.modalConfirmBtn:hover {
+  opacity: 0.88;
+}

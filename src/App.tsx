@@ -1,7 +1,9 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useGlossaryFlow } from './hooks/useGlossaryFlow';
 import GlossaryView from './components/glossary/GlossaryView';
+import TranslationStringsView from './components/translation/TranslationStringsView';
 
-function App() {
+function GlossaryRoot() {
   const flow = useGlossaryFlow();
 
   return (
@@ -24,4 +26,13 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<GlossaryRoot />} />
+        <Route path="/translate" element={<TranslationStringsView />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}

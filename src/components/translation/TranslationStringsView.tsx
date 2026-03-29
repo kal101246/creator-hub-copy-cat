@@ -1103,7 +1103,7 @@ export default function TranslationStringsView() {
           <div className={styles.langPanel}>
             <div className={styles.langBack}>
               <ArrowLeft size={14} />
-              <Link to="/" className={styles.langBackLink}>Back</Link>
+              <Link to="/localization" className={styles.langBackLink}>Back</Link>
             </div>
             <div className={styles.langDivider} />
             <div className={styles.langList}>

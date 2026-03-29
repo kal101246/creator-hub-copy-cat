@@ -638,3 +638,572 @@
   color: #202227;
   line-height: 1.4;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   NEW TAB CONTENTS (Translators, Reports, Table Management)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Shared tab content wrapper ──────────────────────────────────── */
+.tabContent {
+  padding: 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Shared horizontal divider ───────────────────────────────────── */
+.tabDivider {
+  height: 1px;
+  background: rgba(208, 217, 251, 0.10);
+  margin: 4px 0;
+}
+
+/* ── Primary button (blue filled) ────────────────────────────────── */
+.btnPrimary {
+  height: 36px;
+  padding: 0 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  transition: background 0.15s, opacity 0.15s;
+  flex-shrink: 0;
+}
+.btnPrimary:hover:not(:disabled) { background: var(--accent-hover); }
+.btnPrimary:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
+}
+
+/* ── Ghost button (transparent with border) ──────────────────────── */
+.btnGhost {
+  height: 36px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.35);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.btnGhost:hover {
+  background: rgba(208, 217, 251, 0.08);
+  border-color: rgba(208, 217, 251, 0.50);
+}
+
+/* ── Danger button (red) ─────────────────────────────────────────── */
+.btnDanger {
+  height: 36px;
+  padding: 0 16px;
+  background: rgba(223, 40, 31, 0.14);
+  border: 1px solid rgba(223, 40, 31, 0.35);
+  color: #f47066;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.btnDanger:hover {
+  background: rgba(223, 40, 31, 0.24);
+  border-color: rgba(223, 40, 31, 0.55);
+}
+
+/* ── Translators Tab ─────────────────────────────────────────────── */
+
+.translatorsToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* Users | Groups — independent pill buttons */
+.pillGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pillBtn {
+  height: 30px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--content-muted);
+  background: transparent;
+  border: 1px solid var(--shift-300);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.pillBtn:hover {
+  background: var(--shift-300);
+  color: var(--content-default);
+  border-color: var(--shift-400);
+}
+.pillBtnActive {
+  background: #f7f7f8;
+  color: #111216;
+  border-color: transparent;
+  font-weight: 700;
+}
+
+.translatorsActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* "Invite Translators" text link with + icon */
+.inviteLink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+.inviteLink:hover { color: var(--accent-hover); }
+
+/* Translator list rows */
+.translatorList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.translatorRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #1a1b20;
+  border: 1px solid rgba(208, 217, 251, 0.1);
+  border-radius: 12px;
+  transition: background 0.12s, border-color 0.12s;
+}
+.translatorRow:hover {
+  background: #2b2d33;
+  border-color: rgba(208, 217, 251, 0.16);
+}
+
+/* Circular avatar with initials */
+.translatorAvatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.translatorInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.translatorName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+}
+
+.translatorHandle {
+  font-size: 12px;
+  color: var(--content-muted);
+}
+
+/* Three-dot row menu */
+.rowMenuBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--content-muted);
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.rowMenuBtn:hover {
+  background: var(--shift-300);
+  color: var(--content-default);
+}
+
+/* ── Reports Tab ─────────────────────────────────────────────────── */
+
+.reportsHeading {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+  margin-bottom: 24px;
+}
+
+.reportsForm {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 320px;
+}
+
+/* Custom dropdown matching Glossary filter style */
+.selectWrap {
+  position: relative;
+  width: 100%;
+}
+
+.selectInput {
+  width: 100%;
+  height: 36px;
+  padding: 0 36px 0 12px;
+  background: transparent;
+  border: 1px solid var(--shift-300);
+  border-radius: var(--radius-md);
+  color: var(--content-default);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.15s;
+}
+.selectInput:focus {
+  outline: none;
+  border-color: rgba(208, 217, 251, 0.35);
+}
+.selectInput option {
+  background: #1c1c24;
+  color: var(--content-emphasis);
+}
+
+.selectChevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--content-muted);
+  pointer-events: none;
+}
+
+/* ── Table Management Tab ────────────────────────────────────────── */
+
+.tableManagementRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 28px 0;
+}
+
+.tableManagementInfo {
+  flex: 1;
+  max-width: 580px;
+}
+
+.tableManagementTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+  margin-bottom: 6px;
+}
+
+.tableManagementTitleDanger {
+  color: #f47066;
+}
+
+.tableManagementDesc {
+  font-size: 13px;
+  color: var(--content-muted);
+  line-height: 1.55;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Languages Tab
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Quota Visualization ───────────────────────────────────────── */
+.quotaSection {
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--shift-300);
+  margin-bottom: 32px;
+}
+
+.quotaSectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+  margin-bottom: 20px;
+}
+
+.quotaCards {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.quotaCard {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: #1a1b20;
+  border: 1px solid rgba(208, 217, 251, 0.1);
+  border-radius: 12px;
+}
+
+.quotaInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quotaValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  line-height: 1.2;
+}
+
+.quotaLabel {
+  font-size: 13px;
+  color: var(--content-muted);
+}
+
+.quotaCaption {
+  font-size: 13px;
+  color: var(--content-muted);
+  line-height: 1.5;
+}
+
+.quotaLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.quotaLink:hover { text-decoration: underline; }
+
+/* ── Source Language ───────────────────────────────────────────── */
+.sourceLangSection {
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--shift-300);
+  margin-bottom: 32px;
+  max-width: 480px;
+}
+
+.sourceLangLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sourceLangLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+}
+
+.infoIconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--content-muted);
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+  padding: 2px;
+}
+.infoIconBtn:hover { color: var(--content-default); }
+
+.sourceLangSelectWrap {
+  position: relative;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.sourceLangSelect {
+  width: 100%;
+  height: 40px;
+  padding: 0 36px 0 14px;
+  background: rgba(208, 217, 251, 0.05);
+  border: 1px solid var(--shift-300);
+  border-radius: var(--radius-md);
+  color: var(--content-emphasis);
+  font-size: 14px;
+  font-family: inherit;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.sourceLangSelect:hover { border-color: var(--shift-400); }
+.sourceLangSelect:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.sourceLangSelect option { background: #1c1e24; color: var(--content-default); }
+
+.sourceLangChevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--content-muted);
+  pointer-events: none;
+}
+
+.sourceLangHint {
+  font-size: 12px;
+  color: var(--content-muted);
+}
+
+/* ── Supported Languages List ──────────────────────────────────── */
+.langSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.langSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.langSectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+}
+
+.addLangBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  background: rgba(208, 217, 251, 0.07);
+  border: 1px solid var(--shift-300);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--content-default);
+  transition: background 0.15s, border-color 0.15s;
+}
+.addLangBtn:hover {
+  background: rgba(208, 217, 251, 0.12);
+  border-color: var(--shift-400);
+  color: var(--content-emphasis);
+}
+
+.langList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.langRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: #1a1b20;
+  border: 1px solid rgba(208, 217, 251, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.langRow:hover {
+  background: #2b2d33;
+  border-color: rgba(208, 217, 251, 0.16);
+}
+
+.langRowActive {
+  background: #2b2d33;
+  border-color: rgba(208, 217, 251, 0.2);
+}
+
+.langLeft {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.langName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+}
+
+.langPct {
+  font-size: 12px;
+  color: var(--content-muted);
+}
+
+.langPctFull {
+  color: #3dba71;
+}
+
+.langRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 240px;
+}
+
+.autoNA {
+  font-size: 13px;
+  color: var(--content-muted);
+}
+
+.autoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.autoRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.autoRowLabel {
+  font-size: 12px;
+  color: var(--content-muted);
+}
+
+.autoOn {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3dba71;
+}
+
+.autoOff {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--content-muted);
+}
+

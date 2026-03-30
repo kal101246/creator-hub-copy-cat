@@ -1275,3 +1275,940 @@
   /* Pull text 4px closer: thumb→text effective gap = 12 - 4 = 8px */
   margin-right: -4px;
 }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Translated Image — clickable feedback trigger
+   ════════════════════════════════════════════════════════════════════ */
+.imgCheckerboardClickable {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Hover hint overlay */
+.imgFeedbackHint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.52);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+  border-radius: 0; /* card overflow:hidden clips it */
+}
+.imgCheckerboardClickable:hover .imgFeedbackHint {
+  opacity: 1;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Feedback Modal
+   ════════════════════════════════════════════════════════════════════ */
+.feedbackBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+  animation: fbFadeIn 0.18s ease;
+}
+
+.feedbackModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 901;
+  width: 360px;
+  background: #1e2028;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.75), 0 2px 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  animation: fbSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fbFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fbSlideIn { from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+/* ── Header */
+.feedbackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.08);
+}
+.feedbackTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f7f7f8;
+}
+.feedbackCloseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #7e8493;
+  transition: background 0.13s, color 0.13s;
+}
+.feedbackCloseBtn:hover { background: rgba(208, 217, 251, 0.08); color: #f7f7f8; }
+
+/* ── Vote row — thumbs up / down as wide pill buttons */
+.feedbackVoteRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.08);
+}
+.feedbackVoteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0;
+  font-size: 20px;
+  color: #7e8493;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+  border-right: 1px solid rgba(208, 217, 251, 0.08);
+}
+.feedbackVoteBtn:last-child { border-right: none; }
+.feedbackVoteBtn:hover { background: rgba(208, 217, 251, 0.05); color: #d0d9fb; }
+.feedbackVoteBtnActive {
+  background: rgba(208, 217, 251, 0.10);
+  color: #f7f7f8;
+}
+
+/* ── Body */
+.feedbackBody {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.feedbackQuestion {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f7f7f8;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Checkbox list */
+.feedbackOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.feedbackOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #c8cad4;
+  cursor: pointer;
+  user-select: none;
+}
+.feedbackCheckboxInput {
+  display: none; /* visually replaced by .feedbackCheckbox */
+}
+.feedbackCheckbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(208, 217, 251, 0.30);
+  background: transparent;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.13s, border-color 0.13s;
+}
+.feedbackCheckboxChecked {
+  background: #335fff;
+  border-color: #335fff;
+  color: #fff;
+}
+.feedbackOption:hover .feedbackCheckbox {
+  border-color: rgba(208, 217, 251, 0.55);
+}
+
+/* Additional details textarea */
+.feedbackAdditionalWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.feedbackAdditionalLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #7e8493;
+  letter-spacing: 0.02em;
+}
+.feedbackTextarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  background: rgba(208, 217, 251, 0.04);
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #d0d9fb;
+  line-height: 1.5;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.feedbackTextarea::placeholder { color: #505466; }
+.feedbackTextarea:focus {
+  outline: none;
+  border-color: rgba(51, 95, 255, 0.55);
+  background: rgba(208, 217, 251, 0.06);
+}
+
+/* ── Footer */
+.feedbackFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 18px;
+  border-top: 1px solid rgba(208, 217, 251, 0.08);
+}
+.feedbackCancelBtn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7e8493;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  transition: background 0.13s, color 0.13s;
+}
+.feedbackCancelBtn:hover { background: rgba(208, 217, 251, 0.07); color: #d0d9fb; }
+
+.feedbackSubmitBtn {
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #335fff;
+  transition: background 0.13s, box-shadow 0.13s;
+}
+.feedbackSubmitBtn:hover { background: #2651f5; box-shadow: 0 2px 12px rgba(51, 95, 255, 0.4); }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Feedback Toast (bottom-right)
+   ════════════════════════════════════════════════════════════════════ */
+.feedbackToast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #1e2028;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+  font-weight: 500;
+  color: #d0d9fb;
+  animation: fbToastIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.feedbackToastIcon {
+  color: #34d399;
+  flex-shrink: 0;
+}
+@keyframes fbToastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Image V2 states: regenerating overlay + deleted placeholder
+   ════════════════════════════════════════════════════════════════════ */
+.imgCheckerboardLoading {
+  cursor: default !important;
+}
+
+.imgRegenOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(12, 12, 16, 0.82);
+  color: #8b8fa8;
+}
+.imgRegenSpinner {
+  animation: spin 1s linear infinite;
+  color: #8b8fa8;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.imgRegenText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b8fa8;
+  letter-spacing: 0.02em;
+}
+
+.imgDeletedPlaceholder {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #555870;
+  font-style: italic;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Ellipsis Popover Menu (V2)
+   ════════════════════════════════════════════════════════════════════ */
+.imgMenuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+}
+
+.imgMenu {
+  position: fixed;
+  z-index: 801;
+  width: 220px;
+  background: #1e2028;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  padding: 6px 0;
+  animation: fbSlideIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.imgMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #d0d9fb;
+  text-align: left;
+  transition: background 0.12s;
+}
+.imgMenuItem:hover { background: rgba(208, 217, 251, 0.07); }
+
+/* Highlighted "Give Feedback" item */
+.imgMenuItemFeedback {
+  background: rgba(208, 217, 251, 0.06);
+}
+.imgMenuItemFeedback:hover { background: rgba(208, 217, 251, 0.11); }
+
+.imgMenuIcon {
+  color: #7e8493;
+  flex-shrink: 0;
+}
+
+.imgMenuItemDanger { color: #f87171; }
+.imgMenuItemDanger .imgMenuIcon { color: #f87171; }
+.imgMenuItemDanger:hover { background: rgba(248, 113, 113, 0.08); }
+
+.imgMenuDivider {
+  height: 1px;
+  background: rgba(208, 217, 251, 0.08);
+  margin: 4px 0;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Delete Confirmation Modal extras
+   ════════════════════════════════════════════════════════════════════ */
+.deleteModalBody {
+  padding: 16px 20px 4px;
+}
+.deleteModalText {
+  font-size: 13px;
+  color: #9193a1;
+  line-height: 1.6;
+  margin: 0;
+}
+.deleteModalText strong { color: #d0d9fb; font-weight: 600; }
+
+.deleteConfirmBtn {
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #dc2626;
+  transition: background 0.13s, box-shadow 0.13s;
+}
+.deleteConfirmBtn:hover { background: #b91c1c; box-shadow: 0 2px 12px rgba(220, 38, 38, 0.4); }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Hidden file input
+   ════════════════════════════════════════════════════════════════════ */
+.hiddenFileInput {
+  display: none;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Edit Image Text Modal
+   ════════════════════════════════════════════════════════════════════ */
+.editModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 901;
+  width: min(1060px, 96vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: #1a1c22;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.85), 0 2px 8px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: fbSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Header */
+.editModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.08);
+  flex-shrink: 0;
+}
+.editModalHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.editModalTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f7f7f8;
+}
+.editModalSubtitle {
+  font-size: 11px;
+  color: #555870;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Two-column body: canvas (fluid) + panel (fixed 296px) */
+.editModalBody {
+  display: grid;
+  grid-template-columns: 1fr 296px;
+  gap: 0;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Left: Canvas Stage */
+.editStage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: #111215;
+  overflow: hidden;
+}
+.editCanvas {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f0f0f0;
+  aspect-ratio: 4/3;
+  width: 100%;
+  max-height: calc(92vh - 130px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(208, 217, 251, 0.10);
+}
+.editCanvasBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.editCanvasText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* transform set inline; base anchor is center */
+  /* font-weight set inline from state */
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  white-space: pre-wrap;
+  text-align: center;
+  pointer-events: auto;
+  user-select: none;
+  cursor: grab;
+  transition: opacity 0.1s;
+  z-index: 2;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.editCanvasText:hover {
+  outline: 1.5px dashed rgba(255, 255, 255, 0.45);
+  outline-offset: 5px;
+}
+.editCanvasText:active {
+  cursor: grabbing;
+}
+/* Blue bounding box when text is selected */
+.editCanvasTextSelected {
+  outline: 2px solid #335fff !important;
+  outline-offset: 5px;
+}
+.editStageHint {
+  font-size: 11px;
+  color: #3a3d4a;
+  text-align: center;
+  margin: 0;
+  user-select: none;
+}
+
+/* ── Right: Properties Panel */
+.editPropsPanel {
+  background: #22242c;
+  border-left: 1px solid rgba(208, 217, 251, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.editPropsPanel::-webkit-scrollbar { width: 4px; }
+.editPropsPanel::-webkit-scrollbar-thumb { background: rgba(208,217,251,0.10); border-radius: 2px; }
+
+/* ── Collapsible property section */
+.editPropSection {
+  border-bottom: 1px solid rgba(208, 217, 251, 0.07);
+}
+.editPropHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 14px;
+  background: transparent;
+  border: none;
+  color: #9193a1;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  text-align: left;
+}
+.editPropHeader:hover { background: rgba(208,217,251,0.04); color: #d0d9fb; }
+.editPropChevron {
+  flex-shrink: 0;
+  transition: transform 0.18s ease;
+}
+.editPropChevronOpen { transform: rotate(90deg); }
+
+.editPropBody {
+  padding: 8px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Content section: compact textarea */
+.editPropTextarea {
+  width: 100%;
+  resize: vertical;
+  background: rgba(208, 217, 251, 0.05);
+  border: 1px solid rgba(208, 217, 251, 0.12);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #d0d9fb;
+  line-height: 1.5;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+  min-height: 52px;
+}
+.editPropTextarea::placeholder { color: #505466; }
+.editPropTextarea:focus { outline: none; border-color: rgba(51, 95, 255, 0.55); }
+
+/* ── Generic prop row: label left, control(s) right */
+.editPropRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.editPropLabel {
+  font-size: 11px;
+  color: #7e8493;
+  flex-shrink: 0;
+  width: 44px;
+}
+.editPropUnit {
+  font-size: 11px;
+  color: #555870;
+  flex-shrink: 0;
+}
+
+/* ── Slider + number input in one row */
+.editSliderWithInput {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.editSlider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(208, 217, 251, 0.15);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.editSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #335fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  cursor: grab;
+  transition: transform 0.12s;
+}
+.editSlider::-webkit-slider-thumb:active { transform: scale(1.2); cursor: grabbing; }
+
+.editNumInput {
+  width: 42px;
+  background: rgba(208,217,251,0.06);
+  border: 1px solid rgba(208,217,251,0.12);
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 12px;
+  color: #d0d9fb;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.editNumInput::-webkit-outer-spin-button,
+.editNumInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.editNumInput:focus { outline: none; border-color: rgba(51,95,255,0.5); }
+
+/* ── Alignment section label */
+.editAlignLabel {
+  font-size: 11px;
+  color: #7e8493;
+  margin-bottom: 4px;
+}
+
+/* ── 3×3 Alignment grid */
+.editAlignGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 28px);
+  grid-template-rows: repeat(3, 28px);
+  gap: 3px;
+  width: fit-content;
+}
+.editAlignBtn {
+  width: 28px;
+  height: 28px;
+  position: relative;
+  background: rgba(208, 217, 251, 0.06);
+  border: 1px solid rgba(208, 217, 251, 0.10);
+  border-radius: 5px;
+  color: #7e8493;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.editAlignBtn:hover { background: rgba(208,217,251,0.13); border-color: rgba(51,95,255,0.5); }
+
+/* Dot positioned inside each alignment button via data attributes */
+.editAlignDot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.editAlignDot[data-vpos="top"][data-hpos="left"]    { top: 4px; left: 4px; }
+.editAlignDot[data-vpos="top"][data-hpos="center"]  { top: 4px; left: 50%; transform: translateX(-50%); }
+.editAlignDot[data-vpos="top"][data-hpos="right"]   { top: 4px; right: 4px; }
+.editAlignDot[data-vpos="middle"][data-hpos="left"]   { top: 50%; left: 4px; transform: translateY(-50%); }
+.editAlignDot[data-vpos="middle"][data-hpos="center"] { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.editAlignDot[data-vpos="middle"][data-hpos="right"]  { top: 50%; right: 4px; transform: translateY(-50%); }
+.editAlignDot[data-vpos="bottom"][data-hpos="left"]   { bottom: 4px; left: 4px; }
+.editAlignDot[data-vpos="bottom"][data-hpos="center"] { bottom: 4px; left: 50%; transform: translateX(-50%); }
+.editAlignDot[data-vpos="bottom"][data-hpos="right"]  { bottom: 4px; right: 4px; }
+
+/* ── Text section: Font + Weight row */
+.editFontRow {
+  display: flex;
+  gap: 6px;
+}
+.editPropSelect {
+  flex: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(208,217,251,0.06);
+  border: 1px solid rgba(208,217,251,0.12);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #d0d9fb;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  min-width: 0;
+}
+.editPropSelect:focus { outline: none; border-color: rgba(51,95,255,0.5); }
+.editPropSelectSm { flex: 0 0 80px; }
+
+/* ── Format toggles: B I TT */
+.editFormatRow {
+  display: flex;
+  gap: 4px;
+}
+.editFormatBtn {
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(208,217,251,0.06);
+  border: 1px solid rgba(208,217,251,0.10);
+  border-radius: 6px;
+  color: #9193a1;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  font-family: inherit;
+}
+.editFormatBtn:hover { background: rgba(208,217,251,0.12); color: #f7f7f8; }
+.editFormatBtnActive {
+  background: rgba(51,95,255,0.20);
+  border-color: rgba(51,95,255,0.50);
+  color: #8baeff;
+}
+
+/* ── Appearance: Fill row */
+.editFillRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.editColorCircle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(208,217,251,0.25);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.12s, border-color 0.12s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  padding: 0;
+}
+.editColorCircle:hover { transform: scale(1.15); border-color: rgba(208,217,251,0.5); }
+.editColorInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.editHexInput {
+  flex: 1;
+  min-width: 0;
+  background: rgba(208,217,251,0.06);
+  border: 1px solid rgba(208,217,251,0.12);
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  color: #d0d9fb;
+  letter-spacing: 0.04em;
+}
+.editHexInput:focus { outline: none; border-color: rgba(51,95,255,0.5); }
+.editOpacityInput {
+  width: 38px;
+  background: rgba(208,217,251,0.06);
+  border: 1px solid rgba(208,217,251,0.12);
+  border-radius: 5px;
+  padding: 4px 5px;
+  font-size: 12px;
+  color: #d0d9fb;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.editOpacityInput::-webkit-outer-spin-button,
+.editOpacityInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.editOpacityInput:focus { outline: none; border-color: rgba(51,95,255,0.5); }
+
+/* ── Footer */
+.editModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid rgba(208, 217, 251, 0.08);
+  flex-shrink: 0;
+  background: #1a1c22;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Feature Flag Modal (Translation page — matches HomeDashboard style)
+   ════════════════════════════════════════════════════════════════════ */
+.imgFlagModal {
+  position: fixed;
+  z-index: 900;
+  width: 340px;
+  background: #18191f;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  user-select: none;
+}
+
+.imgFlagHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  background: rgba(208, 217, 251, 0.04);
+  border-bottom: 1px solid rgba(208, 217, 251, 0.08);
+  cursor: grab;
+}
+.imgFlagHeader:active { cursor: grabbing; }
+
+.imgFlagTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #d0d9fb;
+  letter-spacing: 0.02em;
+}
+
+.imgFlagClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  color: #7e8493;
+  transition: background 0.12s, color 0.12s;
+}
+.imgFlagClose:hover { background: rgba(208, 217, 251, 0.08); color: #f7f7f8; }
+
+.imgFlagSubtext {
+  font-size: 11px;
+  color: #555870;
+  padding: 8px 14px 4px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.imgFlagGroup {
+  padding: 8px 0 10px;
+}
+
+.imgFlagRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+}
+
+.imgFlagInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.imgFlagName {
+  font-size: 11.5px;
+  font-family: 'SFMono-Regular', 'Consolas', monospace;
+  color: #a5f3a5;
+  word-break: break-all;
+}
+
+.imgFlagDesc {
+  font-size: 11px;
+  color: #555870;
+  line-height: 1.4;
+}
+
+/* Compact toggle — matches HomeDashboard flag toggles */
+.imgFlagToggle {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  border-radius: 9px;
+  background: rgba(208, 217, 251, 0.12);
+  border: 1px solid rgba(208, 217, 251, 0.18);
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.imgFlagToggleOn {
+  background: #335fff;
+  border-color: #335fff;
+}
+.imgFlagKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.imgFlagToggleOn .imgFlagKnob {
+  transform: translateX(14px);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Visual Styling controls — color swatch + opacity
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Color row: swatch pill + hex code side by side */
+/* (Old color swatch classes removed — replaced by editColorCircle/editHexInput in refactored modal) */

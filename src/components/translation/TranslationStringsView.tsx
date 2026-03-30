@@ -1,6 +1,6 @@
-import { Fragment, useState, useCallback } from 'react';
+import { Fragment, useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import {
   Search,
   Plus,
@@ -19,6 +19,15 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ArrowLeft,
+  X,
+  ThumbsUp,
+  ThumbsDown,
+  MessageSquare,
+  CheckCircle2,
+  MoreHorizontal,
+  RefreshCw,
+  FileEdit,
+  ImageUp,
 } from 'lucide-react';
 import IconRail from '../shared/IconRail';
 import styles from './TranslationStringsView.module.css';
@@ -318,6 +327,21 @@ function buildInitialDrafts(): Record<string, string> {
   return map;
 }
 
+// ─── Feedback modal constants ──────────────────────────────────────────────────
+const DOWNVOTE_OPTIONS = [
+  'Fonts do not match',
+  'Text is not readable',
+  'Poor translation quality',
+  'Poor image quality',
+] as const;
+
+const UPVOTE_OPTIONS = [
+  'Font match is excellent',
+  'Text is very clear',
+  'Translation quality is natural',
+  'Image fidelity is preserved',
+] as const;
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function TranslationStringsView() {
@@ -352,6 +376,276 @@ export default function TranslationStringsView() {
   const [selectedImageId,         setSelectedImageId]         = useState<string>(IMAGE_ITEMS[0].id);
   /** Images tab: per-image "Use Translated Image" toggle state */
   const [useTranslatedImageMap,   setUseTranslatedImageMap]   = useState<Record<string, boolean>>({ 'img-1': true });
+
+  // ── Feedback modal ────────────────────────────────────────────────────────
+  const [feedbackOpen,    setFeedbackOpen]    = useState(false);
+  const [feedbackVote,    setFeedbackVote]    = useState<'up' | 'down'>('down');
+  const [feedbackChecks,  setFeedbackChecks]  = useState<Set<string>>(new Set());
+  const [feedbackDetails, setFeedbackDetails] = useState('');
+  const [feedbackToast,   setFeedbackToast]   = useState(false);
+
+  function openFeedback() {
+    setFeedbackVote('down');
+    setFeedbackChecks(new Set());
+    setFeedbackDetails('');
+    setFeedbackOpen(true);
+  }
+
+  function handleFeedbackSubmit() {
+    setFeedbackOpen(false);
+    setFeedbackToast(true);
+    setTimeout(() => setFeedbackToast(false), 3500);
+  }
+
+  function toggleFeedbackCheck(opt: string) {
+    setFeedbackChecks((prev) => {
+      const next = new Set(prev);
+      if (next.has(opt)) next.delete(opt); else next.add(opt);
+      return next;
+    });
+  }
+
+  // ── Image actions V2 (feature flag) ──────────────────────────────────────
+  const navigate = useNavigate();
+
+  /** Master flag: false = V1 (MessageSquare trigger), true = V2 (ellipsis menu) */
+  const [imgFlowV2,      setImgFlowV2]      = useState(false);
+  /** Flag modal ([ key) */
+  const [imgFlagOpen,    setImgFlagOpen]    = useState(false);
+  const [imgFlagPos,     setImgFlagPos]     = useState({ x: 100, y: 140 });
+  const imgFlagDragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
+  /** Ellipsis popover */
+  const [imgMenuOpen,    setImgMenuOpen]    = useState(false);
+  const [imgMenuPos,     setImgMenuPos]     = useState({ x: 0, y: 0 });
+  /** Regenerating state */
+  const [imgRegenerating, setImgRegenerating] = useState(false);
+  /** Deleted state — clears the translated image slot */
+  const [imgDeleted,     setImgDeleted]     = useState(false);
+  /** Delete confirmation modal */
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  /** Action toasts (regenerate / delete) */
+  const [imgActionToast, setImgActionToast] = useState('');
+  const imgToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // '[' key — open flag modal
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === '[' && !e.metaKey && !e.ctrlKey) setImgFlagOpen(p => !p);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  // Draggable flag modal
+  function onImgFlagDragStart(e: React.MouseEvent) {
+    const { clientX, clientY } = e;
+    imgFlagDragRef.current = { startX: clientX, startY: clientY, origX: imgFlagPos.x, origY: imgFlagPos.y };
+    const onMove = (ev: MouseEvent) => {
+      if (!imgFlagDragRef.current) return;
+      setImgFlagPos({
+        x: imgFlagDragRef.current.origX + ev.clientX - imgFlagDragRef.current.startX,
+        y: imgFlagDragRef.current.origY + ev.clientY - imgFlagDragRef.current.startY,
+      });
+    };
+    const onUp = () => {
+      imgFlagDragRef.current = null;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
+  function showImgToast(msg: string) {
+    setImgActionToast(msg);
+    if (imgToastTimer.current) clearTimeout(imgToastTimer.current);
+    imgToastTimer.current = setTimeout(() => setImgActionToast(''), 3500);
+  }
+
+  function openImgMenu(e: React.MouseEvent<HTMLButtonElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setImgMenuPos({ x: rect.right - 220, y: rect.bottom + 6 });
+    setImgMenuOpen(true);
+  }
+
+  /** Upload flow */
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  const [imgUploading, setImgUploading] = useState(false);
+
+  /** Edit Image Text modal */
+  const [editTextOpen,    setEditTextOpen]    = useState(false);
+  const [editText,        setEditText]        = useState('ピザ');
+  const [editTextPos,     setEditTextPos]     = useState({ x: 0, y: 0 });
+  const [editTextSize,    setEditTextSize]    = useState(36);
+  const [editFontFamily,  setEditFontFamily]  = useState('sans-serif');
+  const [editTextStretch, setEditTextStretch] = useState(100);
+  const [editTextColor,   setEditTextColor]   = useState('#000000');
+  const [editTextOpacity, setEditTextOpacity] = useState(100);
+  /** Extended editor state */
+  const [editSelected,    setEditSelected]    = useState(false);
+  const [editFontWeight,  setEditFontWeight]  = useState('700');
+  const [editItalic,      setEditItalic]      = useState(false);
+  const [editAllCaps,     setEditAllCaps]     = useState(false);
+  const [editHistory,     setEditHistory]     = useState<Array<{ x: number; y: number }>>([]);
+  /** Collapsible property section states */
+  const [editSecContent,    setEditSecContent]    = useState(true);
+  const [editSecTransform,  setEditSecTransform]  = useState(true);
+  const [editSecText,       setEditSecText]       = useState(true);
+  const [editSecAppearance, setEditSecAppearance] = useState(true);
+  /** Refs for drag + hidden color input + canvas size */
+  const editDragRef    = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
+  const colorInputRef  = useRef<HTMLInputElement | null>(null);
+  const editCanvasRef  = useRef<HTMLDivElement | null>(null);
+  const editTextPosRef = useRef({ x: 0, y: 0 });
+
+  // Keep posRef in sync so keyboard handler always sees latest position
+  useEffect(() => { editTextPosRef.current = editTextPos; }, [editTextPos]);
+
+  // Keyboard shortcuts for the Edit Text modal (Arrow nudge + Ctrl+Z undo)
+  useEffect(() => {
+    if (!editTextOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'TEXTAREA' || tag === 'INPUT') return;
+      const nudge = e.shiftKey ? 10 : 1;
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          setEditHistory(prev => [...prev.slice(-19), editTextPosRef.current]);
+          setEditTextPos(prev => ({ ...prev, x: prev.x - nudge }));
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          setEditHistory(prev => [...prev.slice(-19), editTextPosRef.current]);
+          setEditTextPos(prev => ({ ...prev, x: prev.x + nudge }));
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setEditHistory(prev => [...prev.slice(-19), editTextPosRef.current]);
+          setEditTextPos(prev => ({ ...prev, y: prev.y - nudge }));
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          setEditHistory(prev => [...prev.slice(-19), editTextPosRef.current]);
+          setEditTextPos(prev => ({ ...prev, y: prev.y + nudge }));
+          break;
+        case 'z':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            setEditHistory(prev => {
+              if (prev.length === 0) return prev;
+              const next = [...prev];
+              const last = next.pop()!;
+              setEditTextPos(last);
+              return next;
+            });
+          }
+          break;
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [editTextOpen]);
+
+  function handleRegenerate() {
+    setImgMenuOpen(false);
+    setImgRegenerating(true);
+    const ms = 5000 + Math.random() * 2000;
+    setTimeout(() => {
+      setImgRegenerating(false);
+      showImgToast('Image Regenerated. Reviewing...');
+    }, ms);
+  }
+
+  function handleUploadNew() {
+    setImgMenuOpen(false);
+    uploadInputRef.current?.click();
+  }
+
+  function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files?.length) return;
+    setImgUploading(true);
+    setTimeout(() => {
+      setImgUploading(false);
+      showImgToast('New image uploaded. Processing...');
+    }, 3000);
+    // Reset so the same file can be picked again if needed
+    e.target.value = '';
+  }
+
+  function handleEditImageText() {
+    setImgMenuOpen(false);
+    setEditText('Sonic');
+    setEditTextPos({ x: 0, y: 0 });
+    setEditTextSize(36);
+    setEditFontFamily('sans-serif');
+    setEditTextStretch(100);
+    setEditTextColor('#000000');
+    setEditTextOpacity(100);
+    setEditSelected(false);
+    setEditFontWeight('700');
+    setEditItalic(false);
+    setEditAllCaps(false);
+    setEditHistory([]);
+    setEditTextOpen(true);
+  }
+
+  /** Snap text to a named alignment position using live canvas dimensions */
+  function snapToAlign(h: 'left' | 'center' | 'right', v: 'top' | 'middle' | 'bottom') {
+    const el = editCanvasRef.current;
+    if (!el) return;
+    const { width, height } = el.getBoundingClientRect();
+    const pad = 28;
+    const x = h === 'left' ? -(width / 2 - pad) : h === 'right' ? width / 2 - pad : 0;
+    const y = v === 'top' ? -(height / 2 - pad) : v === 'bottom' ? height / 2 - pad : 0;
+    setEditHistory(prev => [...prev.slice(-19), editTextPosRef.current]);
+    setEditTextPos({ x, y });
+  }
+
+  function handleSaveTranslation() {
+    setEditTextOpen(false);
+    showImgToast('Text styling saved. Generating updated image...');
+  }
+
+  /** WYSIWYG drag — mousedown on the canvas text overlay */
+  function handleTextMouseDown(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditSelected(true);
+    // Push current position to history before drag begins
+    setEditHistory(prev => [...prev.slice(-19), editTextPosRef.current]);
+    editDragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startPosX: editTextPos.x,
+      startPosY: editTextPos.y,
+    };
+
+    const onMove = (ev: MouseEvent) => {
+      if (!editDragRef.current) return;
+      document.body.style.cursor = 'grabbing';
+      setEditTextPos({
+        x: editDragRef.current.startPosX + ev.clientX - editDragRef.current.startX,
+        y: editDragRef.current.startPosY + ev.clientY - editDragRef.current.startY,
+      });
+    };
+
+    const onUp = () => {
+      editDragRef.current = null;
+      document.body.style.cursor = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
+  function handleDeleteConfirm() {
+    setDeleteModalOpen(false);
+    setImgDeleted(true);
+    showImgToast('Image deleted. Restoring source language...');
+  }
 
   // ── Translation draft & history ───────────────────────────────────────────
   const [draftTexts,   setDraftTexts]   = useState<Record<string, string>>(buildInitialDrafts);
@@ -809,21 +1103,57 @@ export default function TranslationStringsView() {
                 </div>
               </div>
             </div>
-            {/* Translated card */}
+            {/* Translated card — V1: click image → feedback; V2: ellipsis menu */}
             <div className={styles.imgCompareCard}>
-              <div className={styles.imgCheckerboard}>
-                {img.hasRealImages
-                  ? <img src={sonicJaImg} alt="Translated" className={styles.imgCardImg} />
-                  : <div className={styles.imgCardPlaceholder} style={{ background: img.thumbGradient, opacity: 0.7 }} />}
+              <div
+                className={`${styles.imgCheckerboard} ${!imgFlowV2 && !imgRegenerating && !imgUploading && !imgDeleted ? styles.imgCheckerboardClickable : ''} ${(imgRegenerating || imgUploading) ? styles.imgCheckerboardLoading : ''}`}
+                onClick={!imgFlowV2 && !imgRegenerating && !imgUploading && !imgDeleted ? openFeedback : undefined}
+                role={!imgFlowV2 && !imgRegenerating && !imgUploading && !imgDeleted ? 'button' : undefined}
+                tabIndex={!imgFlowV2 && !imgRegenerating && !imgUploading && !imgDeleted ? 0 : undefined}
+                aria-label={!imgFlowV2 ? 'Give feedback on translated image' : undefined}
+                onKeyDown={!imgFlowV2 ? (e) => e.key === 'Enter' && openFeedback() : undefined}
+              >
+                {(imgRegenerating || imgUploading) ? (
+                  <div className={styles.imgRegenOverlay}>
+                    {imgUploading
+                      ? <ImageUp size={28} className={styles.imgRegenSpinner} style={{ animation: 'none' }} />
+                      : <RefreshCw size={28} className={styles.imgRegenSpinner} />}
+                    <span className={styles.imgRegenText}>{imgUploading ? 'Uploading…' : 'Regenerating…'}</span>
+                  </div>
+                ) : imgDeleted ? (
+                  <div className={styles.imgDeletedPlaceholder}>
+                    <span>No translated image</span>
+                  </div>
+                ) : img.hasRealImages ? (
+                  <img src={sonicJaImg} alt="Translated" className={styles.imgCardImg} />
+                ) : (
+                  <div className={styles.imgCardPlaceholder} style={{ background: img.thumbGradient, opacity: 0.7 }} />
+                )}
+                {/* V1 hover hint only */}
+                {!imgFlowV2 && !imgRegenerating && !imgUploading && !imgDeleted && (
+                  <div className={styles.imgFeedbackHint} aria-hidden="true">
+                    <MessageSquare size={18} />
+                    <span>Give Feedback</span>
+                  </div>
+                )}
               </div>
               <div className={styles.imgCardFooter}>
                 <div>
-                  <div className={styles.imgCardLabel}>Translated Image</div>
+                  <div className={styles.imgCardLabel}>
+                    Translated Image{imgDeleted ? ' (Deleted)' : ''}
+                  </div>
                   <div className={styles.imgCardDesc}>{img.translatedDesc}</div>
                 </div>
-                <button className={styles.iconBtn} aria-label="Download translated image">
-                  <Download size={14} />
-                </button>
+                {/* V1: MessageSquare feedback icon | V2: ellipsis menu */}
+                {!imgFlowV2 ? (
+                  <button className={styles.iconBtn} aria-label="Give feedback" onClick={openFeedback}>
+                    <MessageSquare size={14} />
+                  </button>
+                ) : (
+                  <button className={styles.iconBtn} aria-label="More options" onClick={openImgMenu}>
+                    <MoreHorizontal size={14} />
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -1081,6 +1411,7 @@ export default function TranslationStringsView() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
+    <>
     <div className={styles.shell}>
 
       {/* ── App Bar ──────────────────────────────────────────────── */}
@@ -1187,6 +1518,491 @@ export default function TranslationStringsView() {
 
       {/* ── Snackbar toast ──────────────────────────────────────── */}
       {showToast && <div className={styles.snackbar}>{toastMsg}</div>}
+
+      {/* Hidden file input for Upload New Image */}
+      <input
+        ref={uploadInputRef}
+        type="file"
+        accept="image/png,image/jpeg"
+        className={styles.hiddenFileInput}
+        onChange={handleFileSelected}
+      />
     </div>
+
+    {/* ── Feedback Modal ──────────────────────────────────────────────────── */}
+    {feedbackOpen && createPortal(
+      <>
+        <div className={styles.feedbackBackdrop} onClick={() => setFeedbackOpen(false)} />
+        <div className={styles.feedbackModal} role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+
+          {/* Header */}
+          <div className={styles.feedbackHeader}>
+            <span id="fbTitle" className={styles.feedbackTitle}>Give Roblox Feedback</span>
+            <button className={styles.feedbackCloseBtn} onClick={() => setFeedbackOpen(false)} aria-label="Close">
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* Thumbs row */}
+          <div className={styles.feedbackVoteRow}>
+            <button
+              className={`${styles.feedbackVoteBtn} ${feedbackVote === 'up' ? styles.feedbackVoteBtnActive : ''}`}
+              onClick={() => { setFeedbackVote('up'); setFeedbackChecks(new Set()); }}
+              aria-pressed={feedbackVote === 'up'}
+            >
+              <ThumbsUp size={18} />
+            </button>
+            <button
+              className={`${styles.feedbackVoteBtn} ${feedbackVote === 'down' ? styles.feedbackVoteBtnActive : ''}`}
+              onClick={() => { setFeedbackVote('down'); setFeedbackChecks(new Set()); }}
+              aria-pressed={feedbackVote === 'down'}
+            >
+              <ThumbsDown size={18} />
+            </button>
+          </div>
+
+          {/* Body */}
+          <div className={styles.feedbackBody}>
+            <p className={styles.feedbackQuestion}>
+              {feedbackVote === 'down'
+                ? 'What is the problem with the translated image? *'
+                : 'What went well with the translated image?'}
+            </p>
+
+            <div className={styles.feedbackOptions}>
+              {(feedbackVote === 'down' ? DOWNVOTE_OPTIONS : UPVOTE_OPTIONS).map((opt) => (
+                <label key={opt} className={styles.feedbackOption}>
+                  <span
+                    className={`${styles.feedbackCheckbox} ${feedbackChecks.has(opt) ? styles.feedbackCheckboxChecked : ''}`}
+                    aria-hidden="true"
+                  >
+                    {feedbackChecks.has(opt) && <Check size={11} strokeWidth={3} />}
+                  </span>
+                  <input
+                    type="checkbox"
+                    className={styles.feedbackCheckboxInput}
+                    checked={feedbackChecks.has(opt)}
+                    onChange={() => toggleFeedbackCheck(opt)}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
+
+            <div className={styles.feedbackAdditionalWrap}>
+              <label className={styles.feedbackAdditionalLabel}>Additional details</label>
+              <textarea
+                className={styles.feedbackTextarea}
+                placeholder="Take a moment to share more about what could be better"
+                value={feedbackDetails}
+                onChange={(e) => setFeedbackDetails(e.target.value)}
+                rows={4}
+              />
+            </div>
+          </div>
+
+          {/* Footer actions */}
+          <div className={styles.feedbackFooter}>
+            <button className={styles.feedbackCancelBtn} onClick={() => setFeedbackOpen(false)}>
+              Cancel
+            </button>
+            <button className={styles.feedbackSubmitBtn} onClick={handleFeedbackSubmit}>
+              Submit
+            </button>
+          </div>
+
+        </div>
+      </>,
+      document.body
+    )}
+
+    {/* ── Feedback Toast ───────────────────────────────────────────────────── */}
+    {feedbackToast && createPortal(
+      <div className={styles.feedbackToast}>
+        <CheckCircle2 size={15} className={styles.feedbackToastIcon} />
+        <span>Feedback submitted successfully. Thank you!</span>
+      </div>,
+      document.body
+    )}
+
+    {/* ── Ellipsis Popover (V2) ────────────────────────────────────────────── */}
+    {imgMenuOpen && createPortal(
+      <>
+        <div className={styles.imgMenuBackdrop} onClick={() => setImgMenuOpen(false)} />
+        <div className={styles.imgMenu} style={{ left: imgMenuPos.x, top: imgMenuPos.y }}>
+          <button className={styles.imgMenuItem} onClick={handleRegenerate}>
+            <RefreshCw size={14} className={styles.imgMenuIcon} />
+            Regenerate Image
+          </button>
+          <button
+            className={`${styles.imgMenuItem} ${styles.imgMenuItemFeedback}`}
+            onClick={() => { setImgMenuOpen(false); openFeedback(); }}
+          >
+            <MessageSquare size={14} className={styles.imgMenuIcon} />
+            Give Feedback
+          </button>
+          <button className={styles.imgMenuItem} onClick={handleEditImageText}>
+            <FileEdit size={14} className={styles.imgMenuIcon} />
+            Edit Image Text
+          </button>
+          <button className={styles.imgMenuItem} onClick={handleUploadNew}>
+            <ImageUp size={14} className={styles.imgMenuIcon} />
+            Upload New Image
+          </button>
+          <div className={styles.imgMenuDivider} />
+          <button
+            className={`${styles.imgMenuItem} ${styles.imgMenuItemDanger}`}
+            onClick={() => { setImgMenuOpen(false); setDeleteModalOpen(true); }}
+          >
+            <Trash2 size={14} className={styles.imgMenuIcon} />
+            Delete Image
+          </button>
+        </div>
+      </>,
+      document.body
+    )}
+
+    {/* ── Delete Confirmation Modal ────────────────────────────────────────── */}
+    {deleteModalOpen && createPortal(
+      <>
+        <div className={styles.feedbackBackdrop} onClick={() => setDeleteModalOpen(false)} />
+        <div className={styles.feedbackModal} role="dialog" aria-modal="true" aria-labelledby="delTitle">
+          <div className={styles.feedbackHeader}>
+            <span id="delTitle" className={styles.feedbackTitle}>Delete Translated Image?</span>
+            <button className={styles.feedbackCloseBtn} onClick={() => setDeleteModalOpen(false)} aria-label="Close">
+              <X size={16} />
+            </button>
+          </div>
+          <div className={styles.deleteModalBody}>
+            <p className={styles.deleteModalText}>
+              This will permanently remove the current Japanese translation image for{' '}
+              <strong>"Pizza Ad"</strong>. This action cannot be undone.
+            </p>
+          </div>
+          <div className={styles.feedbackFooter}>
+            <button className={styles.feedbackCancelBtn} onClick={() => setDeleteModalOpen(false)}>
+              Cancel
+            </button>
+            <button className={styles.deleteConfirmBtn} onClick={handleDeleteConfirm}>
+              Delete
+            </button>
+          </div>
+        </div>
+      </>,
+      document.body
+    )}
+
+    {/* ── Image Action Toast ───────────────────────────────────────────────── */}
+    {imgActionToast && createPortal(
+      <div className={styles.feedbackToast}>
+        <CheckCircle2 size={15} className={styles.feedbackToastIcon} />
+        <span>{imgActionToast}</span>
+      </div>,
+      document.body
+    )}
+
+    {/* ── Edit Image Text Modal ───────────────────────────────────────────── */}
+    {editTextOpen && createPortal(
+      <>
+        <div className={styles.feedbackBackdrop} onClick={() => setEditTextOpen(false)} />
+        <div className={styles.editModal} role="dialog" aria-modal="true" aria-labelledby="editTitle">
+
+          {/* Header */}
+          <div className={styles.editModalHeader}>
+            <div className={styles.editModalHeaderLeft}>
+              <span id="editTitle" className={styles.editModalTitle}>Edit Translated Text</span>
+              <span className={styles.editModalSubtitle}>
+                Drag to move · Arrow keys nudge 1px · ⇧ 10px · ⌘Z undo
+              </span>
+            </div>
+            <button className={styles.feedbackCloseBtn} onClick={() => setEditTextOpen(false)} aria-label="Close">
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* Body: canvas stage + properties panel */}
+          <div className={styles.editModalBody}>
+
+            {/* ── Left: Canvas Stage ── */}
+            <div className={styles.editStage} onClick={() => setEditSelected(false)}>
+              <div
+                ref={editCanvasRef}
+                className={styles.editCanvas}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img src={sonicEnImg} alt="Source" className={styles.editCanvasBg} />
+                <div
+                  className={`${styles.editCanvasText} ${editSelected ? styles.editCanvasTextSelected : ''}`}
+                  style={{
+                    transform: `translate(calc(-50% + ${editTextPos.x}px), calc(-50% + ${editTextPos.y}px)) scaleX(${editTextStretch / 100})`,
+                    fontSize: editTextSize,
+                    fontFamily: editFontFamily,
+                    fontWeight: editFontWeight,
+                    fontStyle: editItalic ? 'italic' : 'normal',
+                    color: editTextColor,
+                    opacity: editTextOpacity / 100,
+                  }}
+                  onMouseDown={handleTextMouseDown}
+                  onClick={(e) => { e.stopPropagation(); setEditSelected(true); }}
+                  title="Click to select · Drag to reposition"
+                >
+                  {(editAllCaps ? editText.toUpperCase() : editText) || '\u00A0'}
+                </div>
+              </div>
+              <p className={styles.editStageHint}>Click text to select · Drag to move</p>
+            </div>
+
+            {/* ── Right: Properties Panel ── */}
+            <div className={styles.editPropsPanel}>
+
+              {/* ── Section: Content */}
+              <div className={styles.editPropSection}>
+                <button className={styles.editPropHeader} onClick={() => setEditSecContent(p => !p)}>
+                  <ChevronRight size={11} className={`${styles.editPropChevron} ${editSecContent ? styles.editPropChevronOpen : ''}`} />
+                  <span>Content</span>
+                </button>
+                {editSecContent && (
+                  <div className={styles.editPropBody}>
+                    <textarea
+                      className={styles.editPropTextarea}
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      rows={2}
+                      placeholder="Enter translation…"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* ── Section: Transform */}
+              <div className={styles.editPropSection}>
+                <button className={styles.editPropHeader} onClick={() => setEditSecTransform(p => !p)}>
+                  <ChevronRight size={11} className={`${styles.editPropChevron} ${editSecTransform ? styles.editPropChevronOpen : ''}`} />
+                  <span>Transform</span>
+                </button>
+                {editSecTransform && (
+                  <div className={styles.editPropBody}>
+                    {/* 3×3 alignment grid */}
+                    <div className={styles.editAlignLabel}>Alignment</div>
+                    <div className={styles.editAlignGrid}>
+                      {(['top', 'middle', 'bottom'] as const).flatMap(v =>
+                        (['left', 'center', 'right'] as const).map(h => (
+                          <button
+                            key={`${v}-${h}`}
+                            className={styles.editAlignBtn}
+                            onClick={() => snapToAlign(h, v)}
+                            title={`${v === 'middle' ? 'Middle' : v.charAt(0).toUpperCase() + v.slice(1)} ${h.charAt(0).toUpperCase() + h.slice(1)}`}
+                            aria-label={`Snap ${v} ${h}`}
+                          >
+                            <span className={styles.editAlignDot} data-vpos={v} data-hpos={h} />
+                          </button>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Size row */}
+                    <div className={styles.editPropRow}>
+                      <span className={styles.editPropLabel}>Size</span>
+                      <div className={styles.editSliderWithInput}>
+                        <input
+                          type="range" min={14} max={72} value={editTextSize}
+                          onChange={(e) => setEditTextSize(Number(e.target.value))}
+                          className={styles.editSlider}
+                        />
+                        <input
+                          type="number" min={14} max={72} value={editTextSize}
+                          onChange={(e) => setEditTextSize(Math.max(14, Math.min(72, Number(e.target.value))))}
+                          className={styles.editNumInput}
+                        />
+                        <span className={styles.editPropUnit}>px</span>
+                      </div>
+                    </div>
+
+                    {/* Stretch row */}
+                    <div className={styles.editPropRow}>
+                      <span className={styles.editPropLabel}>Stretch</span>
+                      <div className={styles.editSliderWithInput}>
+                        <input
+                          type="range" min={80} max={120} value={editTextStretch}
+                          onChange={(e) => setEditTextStretch(Number(e.target.value))}
+                          className={styles.editSlider}
+                        />
+                        <input
+                          type="number" min={80} max={120} value={editTextStretch}
+                          onChange={(e) => setEditTextStretch(Math.max(80, Math.min(120, Number(e.target.value))))}
+                          className={styles.editNumInput}
+                        />
+                        <span className={styles.editPropUnit}>%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ── Section: Text */}
+              <div className={styles.editPropSection}>
+                <button className={styles.editPropHeader} onClick={() => setEditSecText(p => !p)}>
+                  <ChevronRight size={11} className={`${styles.editPropChevron} ${editSecText ? styles.editPropChevronOpen : ''}`} />
+                  <span>Text</span>
+                </button>
+                {editSecText && (
+                  <div className={styles.editPropBody}>
+                    {/* Font Family + Weight on same row */}
+                    <div className={styles.editFontRow}>
+                      <select
+                        value={editFontFamily}
+                        onChange={(e) => setEditFontFamily(e.target.value)}
+                        className={styles.editPropSelect}
+                      >
+                        <option value="sans-serif">Rubik</option>
+                        <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+                        <option value="'MS Gothic', monospace">MS Gothic</option>
+                      </select>
+                      <select
+                        value={editFontWeight}
+                        onChange={(e) => setEditFontWeight(e.target.value)}
+                        className={`${styles.editPropSelect} ${styles.editPropSelectSm}`}
+                      >
+                        <option value="400">Regular</option>
+                        <option value="500">Medium</option>
+                        <option value="700">Bold</option>
+                        <option value="900">Black</option>
+                      </select>
+                    </div>
+
+                    {/* Format toggles: B I TT */}
+                    <div className={styles.editFormatRow}>
+                      <button
+                        className={`${styles.editFormatBtn} ${Number(editFontWeight) >= 700 ? styles.editFormatBtnActive : ''}`}
+                        onClick={() => setEditFontWeight(p => Number(p) >= 700 ? '400' : '700')}
+                        title="Bold"
+                        style={{ fontWeight: 700 }}
+                      >B</button>
+                      <button
+                        className={`${styles.editFormatBtn} ${editItalic ? styles.editFormatBtnActive : ''}`}
+                        onClick={() => setEditItalic(p => !p)}
+                        title="Italic"
+                        style={{ fontStyle: 'italic' }}
+                      >I</button>
+                      <button
+                        className={`${styles.editFormatBtn} ${editAllCaps ? styles.editFormatBtnActive : ''}`}
+                        onClick={() => setEditAllCaps(p => !p)}
+                        title="All Caps"
+                        style={{ fontSize: 10, letterSpacing: '0.04em' }}
+                      >TT</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ── Section: Appearance */}
+              <div className={styles.editPropSection}>
+                <button className={styles.editPropHeader} onClick={() => setEditSecAppearance(p => !p)}>
+                  <ChevronRight size={11} className={`${styles.editPropChevron} ${editSecAppearance ? styles.editPropChevronOpen : ''}`} />
+                  <span>Appearance</span>
+                </button>
+                {editSecAppearance && (
+                  <div className={styles.editPropBody}>
+                    <div className={styles.editPropRow}>
+                      <span className={styles.editPropLabel}>Fill</span>
+                      <div className={styles.editFillRow}>
+                        {/* Circular color swatch */}
+                        <button
+                          className={styles.editColorCircle}
+                          style={{ background: editTextColor }}
+                          onClick={() => colorInputRef.current?.click()}
+                          title="Pick color"
+                          aria-label="Pick text color"
+                        />
+                        <input
+                          ref={colorInputRef}
+                          type="color"
+                          value={editTextColor}
+                          onChange={(e) => setEditTextColor(e.target.value)}
+                          className={styles.editColorInput}
+                          tabIndex={-1}
+                        />
+                        {/* Editable hex input */}
+                        <input
+                          type="text"
+                          value={editTextColor.toUpperCase()}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            if (/^#[0-9A-Fa-f]{0,6}$/.test(v)) setEditTextColor(v);
+                          }}
+                          className={styles.editHexInput}
+                          maxLength={7}
+                          spellCheck={false}
+                        />
+                        {/* Opacity number input */}
+                        <input
+                          type="number" min={0} max={100}
+                          value={editTextOpacity}
+                          onChange={(e) => setEditTextOpacity(Math.max(0, Math.min(100, Number(e.target.value))))}
+                          className={styles.editOpacityInput}
+                        />
+                        <span className={styles.editPropUnit}>%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className={styles.editModalFooter}>
+            <button className={styles.feedbackCancelBtn} onClick={() => setEditTextOpen(false)}>
+              Cancel
+            </button>
+            <button className={styles.feedbackSubmitBtn} onClick={handleSaveTranslation}>
+              Save Translation
+            </button>
+          </div>
+
+        </div>
+      </>,
+      document.body
+    )}
+
+    {/* ── Feature Flag Modal ([ key) ───────────────────────────────────────── */}
+    {imgFlagOpen && createPortal(
+      <div
+        className={styles.imgFlagModal}
+        style={{ left: imgFlagPos.x, top: imgFlagPos.y }}
+      >
+        <div className={styles.imgFlagHeader} onMouseDown={onImgFlagDragStart}>
+          <span className={styles.imgFlagTitle}>⚑ Feature Flags</span>
+          <button className={styles.imgFlagClose} onClick={() => setImgFlagOpen(false)} aria-label="Close">
+            <X size={13} />
+          </button>
+        </div>
+        <p className={styles.imgFlagSubtext}>
+          Override feature flags locally. Drag around. Only visible to Roblox employees.
+        </p>
+        <div className={styles.imgFlagGroup}>
+          <div className={styles.imgFlagRow}>
+            <div className={styles.imgFlagInfo}>
+              <code className={styles.imgFlagName}>imageTranslationFlowV2</code>
+              <span className={styles.imgFlagDesc}>
+                Enables ellipsis menu with Regenerate, Give Feedback, Edit, Upload, Delete actions
+              </span>
+            </div>
+            <button
+              className={`${styles.imgFlagToggle} ${imgFlowV2 ? styles.imgFlagToggleOn : ''}`}
+              onClick={() => setImgFlowV2(p => !p)}
+              role="switch"
+              aria-checked={imgFlowV2}
+            >
+              <span className={styles.imgFlagKnob} />
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+
+    </>
   );
 }

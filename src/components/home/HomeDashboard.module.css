@@ -319,6 +319,28 @@
 }
 
 /* ── Alert / System messages bar ─────────────────────────────────────── */
+
+/* Animated wrapper — collapses upward when banner is dismissed */
+.alertBarWrap {
+  overflow: hidden;
+  max-height: 80px;
+  opacity: 1;
+  transform: translateY(0);
+  margin-bottom: 0;
+  transition:
+    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.22s ease,
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.alertBarWrapHidden {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-16px);
+  /* Collapse the flex gap so hero shifts up cleanly */
+  margin-bottom: -20px;
+}
+
 .alertBar {
   display: flex;
   align-items: center;
@@ -751,6 +773,8 @@
   align-self: flex-start;
   position: sticky;
   top: 0;
+  /* Cap height so inner widget scrolls while main content keeps going */
+  max-height: calc(100vh - 92px); /* 40px appBar + 52px headerBar */
 }
 
 /* Collapsed state: width → 0, fully hidden */
@@ -960,4 +984,638 @@
   object-fit: cover;
   flex-shrink: 0;
   background: rgba(208, 217, 251, 0.08);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   V2 — Overlay Drawer (position: fixed, slides over content)
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Dim backdrop — covers viewport below the app bar */
+.overlayBackdrop {
+  position: fixed;
+  inset: 0;
+  top: 40px; /* below app bar */
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.overlayBackdropVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Overlay drawer — fixed to viewport right edge */
+.updatesDrawerOverlay {
+  position: fixed;
+  right: 0;
+  top: 40px;   /* below app bar */
+  bottom: 0;
+  width: 320px;
+  background: var(--surface-0);
+  border-left: 1px solid var(--shift-300);
+  z-index: 100;
+  overflow: hidden;
+  transform: translateX(0);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.updatesDrawerOverlayHidden {
+  transform: translateX(100%);
+}
+
+/* Fade/slide inner content when overlay hides */
+.updatesDrawerOverlayHidden .updatesDrawerInner {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+/* Full-height scroll for overlay variant */
+.updatesWidgetOverlay {
+  max-height: calc(100vh - 160px);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Feature Flag Override Modal
+   ════════════════════════════════════════════════════════════════════════ */
+
+.flagModal {
+  position: fixed;
+  z-index: 200;
+  width: 360px;
+  background: #18191f;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Draggable header bar */
+.flagModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #1e2029;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.1);
+  cursor: grab;
+}
+.flagModalHeader:active { cursor: grabbing; }
+
+.flagModalTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--content-emphasis);
+  letter-spacing: 0.02em;
+}
+
+.flagModalClose {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  color: var(--content-muted);
+  transition: background 0.12s, color 0.12s;
+}
+.flagModalClose:hover {
+  background: rgba(208, 217, 251, 0.1);
+  color: var(--content-emphasis);
+}
+
+.flagModalSubtext {
+  font-size: 11px;
+  color: var(--content-muted);
+  line-height: 1.5;
+  padding: 10px 14px 4px;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.07);
+}
+
+/* Flag toggle list */
+.flagToggleList {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0 8px;
+}
+
+.flagToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.06);
+  transition: background 0.12s;
+}
+.flagToggleRow:last-child { border-bottom: none; }
+.flagToggleRow:hover { background: rgba(208, 217, 251, 0.03); }
+
+.flagToggleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.flagToggleName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a5f3a5;          /* pale green — classic feature flag convention */
+  font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', Menlo, monospace;
+  letter-spacing: -0.01em;
+}
+
+.flagToggleDesc {
+  font-size: 11px;
+  color: var(--content-muted);
+  line-height: 1.4;
+}
+
+/* Toggle switch */
+.flagToggle {
+  position: relative;
+  width: 34px;
+  height: 19px;
+  min-width: 34px;
+  background: rgba(208, 217, 251, 0.1);
+  border: 1px solid rgba(208, 217, 251, 0.15);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.flagToggleOn {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.flagToggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 13px;
+  height: 13px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+}
+.flagToggleOn .flagToggleKnob {
+  transform: translateX(15px);
+}
+
+/* ── Modal header actions (Reset + Close) ──────────────────────────────── */
+.flagModalHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flagModalReset {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--content-muted);
+  background: rgba(208, 217, 251, 0.08);
+  border: 1px solid rgba(208, 217, 251, 0.12);
+  transition: background 0.12s, color 0.12s;
+}
+.flagModalReset:hover {
+  background: rgba(208, 217, 251, 0.14);
+  color: var(--content-emphasis);
+}
+
+/* ── Collapsible flag group ────────────────────────────────────────────── */
+.flagGroup {
+  border-top: 1px solid rgba(208, 217, 251, 0.07);
+}
+
+.flagGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--content-muted);
+  transition: background 0.12s, color 0.12s;
+}
+.flagGroupHeader:hover {
+  background: rgba(208, 217, 251, 0.04);
+  color: var(--content-default);
+}
+
+.flagGroupChevron {
+  color: var(--content-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.flagGroupChevronOpen {
+  transform: rotate(90deg);
+}
+
+/* Indented children list */
+.flagGroupChildren {
+  border-top: 1px solid rgba(208, 217, 251, 0.05);
+  padding-bottom: 4px;
+}
+
+/* Remove the old .flagToggleList wrapper styles if needed — rows now live
+   inside .flagGroupChildren which provides appropriate indentation */
+.flagGroupChildren .flagToggleRow {
+  padding-left: 22px; /* slight indent under the group header */
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Explore Creator Hub
+   ════════════════════════════════════════════════════════════════════ */
+.exploreGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.exploreCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px 16px;
+  background: #1c1e24;
+  border: 1px solid rgba(208, 217, 251, 0.10);
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.exploreCard:hover {
+  background: #22242c;
+  border-color: rgba(208, 217, 251, 0.18);
+}
+
+.exploreCardIcon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(208, 217, 251, 0.08);
+  border-radius: 8px;
+  color: #d0d9fb;
+  flex-shrink: 0;
+}
+
+.exploreCardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f7f7f8;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.exploreCardDesc {
+  font-size: 12px;
+  color: #7e8493;
+  line-height: 1.45;
+  margin: 0;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Promo Row (two side-by-side cards)
+   ════════════════════════════════════════════════════════════════════ */
+.promoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.promoCard {
+  display: flex;
+  align-items: stretch;
+  background: #1c1e24;
+  border: 1px solid rgba(208, 217, 251, 0.10);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 148px;
+}
+
+.promoCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 20px 20px 22px;
+}
+
+.promoCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f7f7f8;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.promoCardDesc {
+  font-size: 12px;
+  color: #7e8493;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.promoBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 7px 14px;
+  background: rgba(208, 217, 251, 0.10);
+  border: 1px solid rgba(208, 217, 251, 0.15);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d0d9fb;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.promoBtn:hover {
+  background: rgba(208, 217, 251, 0.16);
+  border-color: rgba(208, 217, 251, 0.25);
+}
+
+.promoCardImgWrap {
+  width: 120px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(208, 217, 251, 0.04);
+  border-left: 1px solid rgba(208, 217, 251, 0.07);
+}
+
+.promoCardImgPlaceholder {
+  font-size: 40px;
+  opacity: 0.55;
+  user-select: none;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Community Section
+   ════════════════════════════════════════════════════════════════════ */
+.communitySection {
+  display: grid;
+  grid-template-columns: 220px 1fr 240px;
+  gap: 20px;
+  background: #1c1e24;
+  border: 1px solid rgba(208, 217, 251, 0.10);
+  border-radius: 14px;
+  padding: 28px 24px;
+  align-items: start;
+}
+
+.communityLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.communityTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #f7f7f8;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.communityDesc {
+  font-size: 12.5px;
+  color: #7e8493;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.communityLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.communityLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #d0d9fb;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.communityLink:hover { color: #fff; }
+
+/* Video player */
+.communityVideo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoPlayer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #0a0a0d;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(208, 217, 251, 0.08);
+}
+
+.videoPlayerBg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(80, 80, 140, 0.18), transparent 70%);
+}
+
+.videoPlayOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoPlayBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+  opacity: 0.92;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.6));
+}
+.videoPlayBtn:hover {
+  transform: scale(1.08);
+  opacity: 1;
+}
+
+/* Spotlight list */
+.spotlightList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spotlightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.spotlightItem:hover {
+  background: rgba(208, 217, 251, 0.05);
+}
+
+.spotlightAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  user-select: none;
+}
+
+.spotlightContent {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.spotlightName {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #f7f7f8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotlightDesc {
+  font-size: 11.5px;
+  color: #7e8493;
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Page Footer
+   ════════════════════════════════════════════════════════════════════ */
+.pageFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 0 8px;
+  border-top: 1px solid rgba(208, 217, 251, 0.08);
+  margin-top: 8px;
+}
+
+.footerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footerCopy {
+  font-size: 11px;
+  color: #555870;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footerLink {
+  font-size: 11px;
+  color: #7e8493;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footerLink:hover { color: #d0d9fb; }
+
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footerSocials {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footerSocialBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #7e8493;
+  transition: color 0.15s, background 0.15s;
+}
+.footerSocialBtn:hover {
+  color: #d0d9fb;
+  background: rgba(208, 217, 251, 0.08);
+}
+
+.footerLangBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1px solid rgba(208, 217, 251, 0.15);
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: #7e8493;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.footerLangBtn:hover {
+  background: rgba(208, 217, 251, 0.08);
+  color: #d0d9fb;
 }

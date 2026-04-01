@@ -1,6 +1,6 @@
 import { Fragment, useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import {
   Search,
   Plus,
@@ -12,7 +12,6 @@ import {
   Loader2,
   Trash2,
   Upload,
-  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -406,7 +405,6 @@ export default function TranslationStringsView() {
   }
 
   // ── Image actions V2 (feature flag) ──────────────────────────────────────
-  const navigate = useNavigate();
 
   /** Master flag: false = V1 (MessageSquare trigger), true = V2 (ellipsis menu) */
   const [imgFlowV2,      setImgFlowV2]      = useState(false);
@@ -486,7 +484,7 @@ export default function TranslationStringsView() {
   const [editFontWeight,  setEditFontWeight]  = useState('700');
   const [editItalic,      setEditItalic]      = useState(false);
   const [editAllCaps,     setEditAllCaps]     = useState(false);
-  const [editHistory,     setEditHistory]     = useState<Array<{ x: number; y: number }>>([]);
+  const [_editHistory,    setEditHistory]     = useState<Array<{ x: number; y: number }>>([]);
   /** Collapsible property section states */
   const [editSecContent,    setEditSecContent]    = useState(true);
   const [editSecTransform,  setEditSecTransform]  = useState(true);

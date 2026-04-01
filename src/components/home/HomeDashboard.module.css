@@ -17,39 +17,6 @@
   font-size: 14px;
 }
 
-/* ── App Bar ─────────────────────────────────────────────────────────── */
-.appBar {
-  height: 40px;
-  min-height: 40px;
-  background: #121215;
-  border-bottom: 1px solid rgba(208, 217, 251, 0.12);
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  flex-shrink: 0;
-}
-.trafficLights {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 16px;
-}
-.tl {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-.tlClose { background: #ff5f57; }
-.tlMin   { background: #febc2e; }
-.tlMax   { background: #28c840; }
-.appBarTitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: #f7f7f8;
-  white-space: nowrap;
-  text-align: center;
-}
-
 /* ── Viewport ────────────────────────────────────────────────────────── */
 .viewport {
   display: flex;
@@ -59,24 +26,83 @@
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────── */
-/* Dual-rail: 72px IconRail + flex-1 navTree — matches Experience Overview */
+/* Single-rail: no IconRail, just the full-width text nav */
 .sidebar {
-  width: 288px;
-  min-width: 288px;
+  width: 220px;
+  min-width: 220px;
   flex-shrink: 0;
   display: flex;
+  flex-direction: column;
   background: var(--surface-0);
   border-right: 1px solid var(--shift-300);
   overflow: hidden;
 }
 
-/* ── Nav tree (216px, flex:1) ─────────────────────────────────────────── */
+/* ─ Logo row: Roblox mark + CREATOR wordmark ─ */
+.sidebarLogoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 18px;
+  flex-shrink: 0;
+}
+.sidebarLogoMark {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.sidebarLogoText {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--content-emphasis);
+  text-transform: uppercase;
+}
+
+/* ─ Context / account switcher ─ */
+.navContextSelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 0 6px 4px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: left;
+}
+.navContextSelector:hover { background: var(--shift-300); }
+
+/* Real user avatar image */
+.navContextAvatarImg {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(208, 217, 251, 0.15);
+}
+.navContextName {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--content-emphasis);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.navContextChevron { color: var(--content-muted); flex-shrink: 0; }
+
+/* ── Nav tree (scrollable middle area) ───────────────────────────────── */
 .navTree {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  min-width: 0;
+  min-height: 0;
 }
 .navTree::-webkit-scrollbar { width: 3px; }
 .navTree::-webkit-scrollbar-track { background: transparent; }
@@ -85,58 +111,19 @@
   border-radius: 2px;
 }
 
-/* ─ Game header (replaces logo row + game switcher) ─ */
-.navGameHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 56px;
-  padding: 0 12px;
-  border-bottom: 1px solid var(--shift-300);
-  flex-shrink: 0;
-  cursor: pointer;
-  min-width: 0;
-  text-align: left;
-  transition: background 0.15s;
-}
-.navGameHeader:hover { background: var(--shift-300); }
-.navGameIcon {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #1e5c3a 0%, #2d8a58 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  line-height: 1;
-}
-.navGameName {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--content-emphasis);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-.navGameChevron { color: var(--content-muted); flex-shrink: 0; }
-
 /* ─ Nav body wrapper ─ */
 .navBody {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 4px 4px;
+  padding: 4px 6px;
 }
 
-/* ─ Nav item (icon + label) — matches ExperienceOverview navItem exactly ─ */
+/* ─ Nav item (icon + label) ─ */
 .navItem {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 10px 12px;
   font-size: 14px;
   font-weight: 500;
@@ -159,6 +146,7 @@
 }
 .navItemIcon { flex-shrink: 0; color: inherit; }
 .navItemLabel {
+  flex: 1;
   font-size: 14px;
   line-height: 1;
   white-space: nowrap;
@@ -166,14 +154,57 @@
   text-overflow: ellipsis;
 }
 
-/* ─ Dividers + spacer ─ */
+/* 'New' pill badge on nav items */
+.navItemBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #111216;
+  background: #f7f7f8;
+  padding: 2px 6px;
+  border-radius: 20px;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* ─ Dividers ─ */
 .navDivider {
   height: 1px;
   background: var(--shift-300);
-  margin: 4px 12px;
+  margin: 6px 14px;
   flex-shrink: 0;
 }
 .navSpacer { flex: 1; }
+
+/* ─ Pinned footer ─ */
+.sidebarFooter {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 6px 12px;
+  border-top: 1px solid var(--shift-300);
+}
+
+/* Collapse sidebar button */
+.sidebarCollapseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 6px 12px 2px;
+  border-radius: 6px;
+  color: var(--content-muted);
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.sidebarCollapseBtn:hover {
+  background: var(--shift-300);
+  color: var(--content-default);
+}
 
 /* ── Primary Pane ────────────────────────────────────────────────────── */
 .primaryPane {
@@ -523,317 +554,487 @@
   border-color: rgba(208, 217, 251, 0.35);
 }
 
-/* ── Experiences Grid ─────────────────────────────────────────────────── */
-.experiencesGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
+/* ════════════════════════════════════════════════════════════════════
+   Experiences carousel
+   ════════════════════════════════════════════════════════════════════ */
 
-/* Experience tile */
-.expTile {
-  /* Elevated card surface — one step lighter than the #121215 shell */
-  background: #1c1e24;
-  border: 1px solid rgba(208, 217, 251, 0.09);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  min-height: 280px;
-  transition: border-color 0.15s;
-}
-.expTile:hover { border-color: rgba(208, 217, 251, 0.18); }
-.expTileHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 16px 12px 16px 20px;
-  flex-shrink: 0;
-}
-.expTileLeading {
+/* Section header overrides for Experiences row */
+.expSectionLeft {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
+  gap: 2px;
 }
-.expTileIcon {
+.expViewAllChevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: rgba(208, 217, 251, 0.5);
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.expViewAllChevron:hover { background: rgba(208, 217, 251, 0.08); color: #d5d7dd; }
+
+/* "Create Experience" outline button */
+.expCreateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid rgba(208, 217, 251, 0.20);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d5d7dd;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.expCreateBtn:hover {
+  background: rgba(208, 217, 251, 0.08);
+  border-color: rgba(208, 217, 251, 0.35);
+}
+
+/* ── Carousel wrapper — relative for arrow buttons */
+.expCarouselWrap { position: relative; }
+
+/* Arrow buttons */
+.expArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #22242c;
+  border: 1px solid rgba(208, 217, 251, 0.18);
+  color: #f7f7f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.2s, background 0.15s, transform 0.15s;
+}
+.expCarouselWrap:hover .expArrow { opacity: 1; }
+.expArrow:hover { background: #2e3038; transform: translateY(-50%) scale(1.08); }
+.expArrowLeft  { left: -18px; }
+.expArrowRight { right: -18px; }
+
+/* Scrollable track */
+.expCarousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /* leave room below cards for the hover action bar */
+  padding-bottom: 52px;
+  margin-bottom: -52px;
+  /* hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.expCarousel::-webkit-scrollbar { display: none; }
+
+/* ── Individual experience card */
+.expCard {
+  flex-shrink: 0;
+  width: 250px;
+  scroll-snap-align: start;
+  position: relative;
+  /* overflow: visible so the hover bar can drop below */
+  overflow: visible;
+}
+
+/* Main card surface */
+.expCardInner {
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.09);
+  border-radius: 12px;
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  position: relative;
+  z-index: 1;
+}
+.expCardInner:hover { border-color: rgba(208, 217, 251, 0.22); }
+
+/* Top row: badge + menu */
+.expCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.expVisiBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border: 1px solid rgba(208, 217, 251, 0.20);
+  border-radius: 9999px;
+  background: transparent;
+  color: #d5d7dd;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.expCardMenu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: rgba(208, 217, 251, 0.4);
+  transition: background 0.12s, color 0.12s;
+  cursor: pointer;
+}
+.expCardMenu:hover { background: rgba(208, 217, 251, 0.08); color: #d5d7dd; }
+
+/* Middle row: thumbnail + title */
+.expCardMid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.expCardThumb {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  font-size: 16px;
-  line-height: 1;
+  object-fit: cover;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-.expTileName {
-  font-size: 20px;
-  font-weight: 700;
+.expCardTitle {
+  font-size: 14px;
+  font-weight: 600;
   color: #f7f7f8;
-  letter-spacing: -0.2px;
-  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
 }
-.expTileMenu {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  color: #bcbec8;
-  flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
-}
-.expTileMenu:hover {
-  background: rgba(208, 217, 251, 0.08);
-  color: #d5d7dd;
-}
-.expTileBody {
-  flex: 1;
-  padding: 0 20px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.statPrimary { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-.statPrimaryLabel { font-size: 12px; color: #d5d7dd; }
-.statPrimaryValue {
-  font-size: 24px;
-  font-weight: 700;
-  color: #f7f7f8;
-  letter-spacing: -0.24px;
-  line-height: 1.2;
-}
-.statList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.statRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 17px;
-}
-.statLabel { font-size: 12px; color: #d5d7dd; }
-.statValue { font-size: 12px; font-weight: 600; color: #f7f7f8; }
 
-/* Footer row with "Try sponsored ads" */
-.expTileFooter {
-  border-top: 1px solid rgba(208, 217, 251, 0.08);
-  padding: 4px 8px;
-  flex-shrink: 0;
-}
-.expTileFooterInner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.expTileFooterInner:hover { background: rgba(208, 217, 251, 0.06); }
-.footerLeading {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
-}
-.footerIcon { color: #0064e0; flex-shrink: 0; margin-top: 1px; }
-.footerTitle { font-size: 14px; font-weight: 600; color: #f7f7f8; margin-bottom: 2px; }
-.footerDesc { font-size: 12px; color: #d5d7dd; line-height: 1.3; }
-.footerChevron { color: #bcbec8; flex-shrink: 0; }
-
-/* Add-to-watchlist tile */
-.watchlistTile {
-  background: #1c1e24;
-  border: 1px solid rgba(208, 217, 251, 0.09);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  position: relative;
-  min-height: 280px;
-  transition: border-color 0.15s;
-}
-.watchlistTile:hover { border-color: rgba(208, 217, 251, 0.18); }
-.watchlistClose {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  color: #bcbec8;
-  transition: background 0.15s, color 0.15s;
-}
-.watchlistClose:hover {
-  background: rgba(208, 217, 251, 0.08);
-  color: #d5d7dd;
-}
-.watchlistInner {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 28px 20px 24px;
-  text-align: center;
-}
-.watchlistIllustration { font-size: 44px; line-height: 1; }
-.watchlistText { display: flex; flex-direction: column; gap: 4px; }
-.watchlistTitle { font-size: 16px; font-weight: 600; color: #f7f7f8; }
-.watchlistDesc { font-size: 12px; color: #d5d7dd; }
-.addExpBtn {
-  height: 36px;
-  padding: 0 20px;
-  background: rgba(208, 217, 251, 0.12);
-  border: 1px solid rgba(208, 217, 251, 0.10);
-  color: #f7f7f8;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  margin-top: 4px;
-  transition: background 0.15s;
-}
-.addExpBtn:hover { background: rgba(208, 217, 251, 0.18); }
-
-/* ── Learn Section ────────────────────────────────────────────────────── */
-.learnGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-.learnCard {
-  background: #1c1e24;
-  border: 1px solid rgba(208, 217, 251, 0.09);
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.learnCard:hover {
-  border-color: rgba(208, 217, 251, 0.22);
-  transform: translateY(-2px);
-}
-.learnThumb {
-  height: 110px;
-  width: 100%;
-  object-fit: cover;
-  display: block;
-}
-.learnCardBody {
-  padding: 12px;
+/* Concurrent users */
+.expCardStats {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
-.learnTag {
-  font-size: 10px;
-  font-weight: 600;
-  color: #bcbec8;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.expStatLabel { font-size: 11px; color: #7e8493; }
+.expStatValue  { font-size: 20px; font-weight: 700; color: #f7f7f8; line-height: 1.2; }
+
+/* Secondary stats grid */
+.expCardSecondary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.learnTitle {
+.expStatRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.expStatRowLabel { font-size: 11px; color: #7e8493; }
+.expStatRowValue { font-size: 11px; font-weight: 600; color: #d5d7dd; }
+
+/* ── Hover action bar — drops below the card */
+.expCardHoverBar {
+  position: absolute;
+  top: calc(100% - 1px); /* sit flush against the card bottom border */
+  left: -1px;
+  right: -1px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 14px;
+  background: transparent;
+  border: 1px solid rgba(208, 217, 251, 0.09);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.18s, transform 0.18s;
+}
+.expCard:hover .expCardHoverBar {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.expCard:hover .expCardInner {
+  border-radius: 12px 12px 0 0;
+  border-bottom-color: transparent;
+}
+
+.expHoverBtnPrimary {
+  flex: 1;
+  height: 32px;
+  background: #0e72ed;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.expHoverBtnPrimary:hover { background: #0c64d4; }
+
+.expHoverBtnSecondary {
+  flex: 1;
+  height: 32px;
+  background: rgba(208, 217, 251, 0.10);
+  border: 1px solid rgba(208, 217, 251, 0.15);
+  color: #d0d9fb;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.expHoverBtnSecondary:hover { background: rgba(208, 217, 251, 0.16); }
+
+/* ── "View all" card at end of carousel */
+.expCardViewAll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(208, 217, 251, 0.03);
+  border: 1px solid rgba(208, 217, 251, 0.10);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  /* reset hover bar behavior for this card */
+  overflow: hidden;
+}
+.expCardViewAll:hover { background: rgba(208, 217, 251, 0.06); border-color: rgba(208, 217, 251, 0.18); }
+/* hide the action bar on the view-all card */
+.expCardViewAll .expCardHoverBar { display: none; }
+
+.expViewAllTitle {
   font-size: 14px;
+  font-weight: 600;
+  color: #f7f7f8;
+}
+.expViewAllDesc {
+  font-size: 11px;
+  color: #7e8493;
+  line-height: 1.4;
+}
+
+/* ── Learn Section ────────────────────────────────────────────────────── */
+/* ── Learn carousel wrapper */
+.learnCarouselWrap {
+  position: relative;
+}
+
+/* Arrow buttons — appear on wrapper hover */
+.learnArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #22242c;
+  border: 1px solid rgba(208, 217, 251, 0.18);
+  color: #f7f7f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.2s, background 0.15s, transform 0.15s;
+}
+.learnCarouselWrap:hover .learnArrow {
+  opacity: 1;
+}
+.learnArrow:hover {
+  background: #2e3038;
+  transform: translateY(-50%) scale(1.08);
+}
+.learnArrowLeft  { left: -18px; }
+.learnArrowRight { right: -18px; }
+
+/* Scrollable row */
+.learnCarousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.learnCarousel::-webkit-scrollbar { display: none; }
+
+/* Card is an <a> tag — fixed width so cards don't squish */
+.learnCard {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  /* Carousel-specific */
+  flex-shrink: 0;
+  width: 240px;
+  scroll-snap-align: start;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.learnCard:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.13);
+  transform: translateY(-2px);
+}
+
+/* Thumbnail wrapper — holds image + overlaid badges */
+.learnThumbWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.learnThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Video duration pill — bottom right of thumbnail */
+.learnDuration {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+/* Play icon — bottom-left of thumbnail */
+.learnPlayIcon {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+.learnCard:hover .learnPlayIcon { opacity: 1; }
+
+/* Docs badge — bottom-left for doc cards */
+.learnDocBadge {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #d0d9fb;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* Card text body */
+.learnCardBody {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.learnTitle {
+  font-size: 13px;
   font-weight: 700;
   color: #f7f7f8;
-  line-height: 1.3;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+
 .learnDesc {
   font-size: 12px;
-  color: #d5d7dd;
-  line-height: 1.4;
-  margin-top: 2px;
+  color: #7e8493;
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Author row (videos only) */
+.learnAuthorRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.learnAuthorAvatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.learnAuthorName {
+  font-size: 11px;
+  font-weight: 600;
+  color: #7e8493;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Updates Drawer — animated collapsible panel ─────────────────────── */
 
-/* Outer shell: clips the sliding content + drives the width animation */
-.updatesDrawer {
-  width: 320px;
-  min-width: 0;
-  flex-shrink: 0;
-  overflow: hidden;
-  /* Width eases closed; cubic-bezier(0.4,0,0.2,1) = material "standard" */
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Keeps the drawer pinned to the top of the scroll viewport */
-  align-self: flex-start;
-  position: sticky;
-  top: 0;
-  /* Cap height so inner widget scrolls while main content keeps going */
-  max-height: calc(100vh - 92px); /* 40px appBar + 52px headerBar */
-}
-
-/* Collapsed state: width → 0, fully hidden */
-.updatesDrawerClosed {
-  width: 0;
-}
-
-/* Inner: fixed width so content never squishes; slides & fades out */
-.updatesDrawerInner {
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  opacity: 1;
-  transform: translateX(0);
-  /* Content fades out faster (0.22s) than the container closes (0.4s) */
-  transition:
-    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* When drawer is closed, slide inner content to the right and fade it */
-.updatesDrawerClosed .updatesDrawerInner {
-  opacity: 0;
-  transform: translateX(40px);
-}
-
-/* Header row: title + close chevron */
-.updatesHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-right: 2px;
-}
-
-/* >> close button */
-.updatesToggleBtn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  color: var(--content-muted);
-  flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
-}
-.updatesToggleBtn:hover {
-  background: var(--shift-300);
-  color: var(--content-emphasis);
-}
-
 /* ── Floating reveal tab ─────────────────────────────────────────────── */
-/* Always in the DOM; slides in from the right when the drawer is closed */
+/* Always in the DOM; slides in from the right when the V1 drawer is closed */
 .updatesRevealTab {
   position: fixed;
   right: 0;
   top: 50%;
-  /* Hidden by default: fully off-screen to the right */
   transform: translateY(-50%) translateX(100%);
   display: flex;
   flex-direction: column;
@@ -869,6 +1070,132 @@
   writing-mode: vertical-rl;
   text-orientation: mixed;
 }
+
+/* ── V2 floating reveal tab ──────────────────────────────────────────── */
+/* Rendered inside the V2 portal fragment; only visible when drawer is closed */
+.v2RevealTab {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  /* Start fully off-screen to the right */
+  transform: translateY(-50%) translateX(100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 9px;
+  background: #1b1c22;
+  border: 1px solid rgba(208, 217, 251, 0.12);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  color: var(--content-muted);
+  cursor: pointer;
+  z-index: 201; /* above the V2 overlay backdrop (z-index 200) */
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.45);
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.15s,
+    color 0.15s;
+  pointer-events: none;
+}
+/* Slide into view */
+.v2RevealTabVisible {
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+}
+.v2RevealTab:hover {
+  background: #2b2d33;
+  color: var(--content-emphasis);
+  /* Tiny leftward nudge signals "pull me open" */
+  transform: translateY(-50%) translateX(-3px);
+}
+.v2RevealLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   V1 — Elastic flex drawer
+───────────────────────────────────────────────────────────────────────── */
+
+/* Outer shell: clips the sliding content + drives the width animation */
+.updatesDrawer {
+  width: 320px;
+  min-width: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  /* Width eases closed; cubic-bezier(0.4,0,0.2,1) = material "standard" */
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Keeps the drawer pinned to the top of the scroll viewport */
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+  /* Cap height so inner widget scrolls while main content keeps going */
+  max-height: calc(100vh - 52px); /* 52px headerBar */
+}
+
+/* Collapsed state: width → 0, fully hidden */
+.updatesDrawerClosed {
+  width: 0;
+}
+
+/* Inner: fixed width so content never squishes; slides & fades out */
+.updatesDrawerInner {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 1;
+  transform: translateX(0);
+  /* Content fades out faster (0.22s) than the container closes (0.4s) */
+  transition:
+    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* In the overlay card, inner must stretch to fill and carry padding */
+.updatesDrawerOverlay .updatesDrawerInner {
+  flex: 1;
+  min-height: 0;
+  width: auto;
+  padding: 16px;
+}
+
+/* When drawer is closed, slide inner content to the right and fade it */
+.updatesDrawerClosed .updatesDrawerInner {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+/* Header row: title + close chevron */
+.updatesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 2px;
+}
+
+/* >> close button */
+.updatesToggleBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--content-muted);
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.updatesToggleBtn:hover {
+  background: var(--shift-300);
+  color: var(--content-emphasis);
+}
+
+
 .updatesTitle {
   font-size: 20px;
   font-weight: 700;
@@ -990,12 +1317,11 @@
    V2 — Overlay Drawer (position: fixed, slides over content)
    ════════════════════════════════════════════════════════════════════════ */
 
-/* Dim backdrop — covers viewport below the app bar */
+/* Dim backdrop — covers full viewport */
 .overlayBackdrop {
   position: fixed;
   inset: 0;
-  top: 40px; /* below app bar */
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   z-index: 99;
@@ -1008,22 +1334,33 @@
   pointer-events: auto;
 }
 
-/* Overlay drawer — fixed to viewport right edge */
+/*
+  V2 overlay drawer — full-height floating card, 16px inset on all sides.
+  All four corners rounded. Internal flex column so content scrolls and
+  any footer (header area) stays pinned.
+*/
 .updatesDrawerOverlay {
   position: fixed;
-  right: 0;
-  top: 40px;   /* below app bar */
-  bottom: 0;
+  right: 16px;
+  top: 16px;
+  bottom: 16px;
   width: 320px;
-  background: var(--surface-0);
-  border-left: 1px solid var(--shift-300);
+  background: #18191f;
+  border-radius: 14px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.65),
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(208, 217, 251, 0.07);
   z-index: 100;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   transform: translateX(0);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+/* Slide fully off-screen (past the right edge + the 16px gap) */
 .updatesDrawerOverlayHidden {
-  transform: translateX(100%);
+  transform: translateX(calc(100% + 32px));
 }
 
 /* Fade/slide inner content when overlay hides */
@@ -1032,9 +1369,12 @@
   transform: translateX(40px);
 }
 
-/* Full-height scroll for overlay variant */
+/* Full-height scroll for overlay variant — fills remaining height in the card */
 .updatesWidgetOverlay {
-  max-height: calc(100vh - 160px);
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -1242,28 +1582,77 @@
 /* ════════════════════════════════════════════════════════════════════
    Explore Creator Hub
    ════════════════════════════════════════════════════════════════════ */
-.exploreGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+/* ── Explore carousel wrapper (relative so arrows can sit outside the scroll track) */
+.exploreCarouselWrap {
+  position: relative;
 }
 
+/* Arrow buttons — hidden until wrapper is hovered */
+.exploreArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #22242c;
+  border: 1px solid rgba(208, 217, 251, 0.18);
+  color: #f7f7f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.2s, background 0.15s, transform 0.15s;
+  /* keep the translateY(-50%) while also scaling on hover */
+}
+.exploreCarouselWrap:hover .exploreArrow {
+  opacity: 1;
+}
+.exploreArrow:hover {
+  background: #2e3038;
+  transform: translateY(-50%) scale(1.08);
+}
+.exploreArrowLeft  { left: -18px; }
+.exploreArrowRight { right: -18px; }
+
+/* Scrollable row — single line, hides scrollbar */
+.exploreCarousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /* Hide scrollbar on all browsers */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.exploreCarousel::-webkit-scrollbar { display: none; }
+
+/* Card is an <a> tag — fixed width so cards don't squish */
 .exploreCard {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
   padding: 18px 16px;
-  background: #1c1e24;
-  border: 1px solid rgba(208, 217, 251, 0.10);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 12px;
-  text-align: left;
+  text-decoration: none;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  /* Carousel-specific */
+  flex-shrink: 0;
+  width: 260px;
+  scroll-snap-align: start;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
 }
 .exploreCard:hover {
-  background: #22242c;
-  border-color: rgba(208, 217, 251, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.13);
+  transform: translateY(-2px);
 }
 
 .exploreCardIcon {
@@ -1304,235 +1693,251 @@
 }
 
 .promoCard {
-  display: flex;
-  align-items: stretch;
+  position: relative;
   background: #1c1e24;
-  border: 1px solid rgba(208, 217, 251, 0.10);
+  border: 1px solid rgba(208, 217, 251, 0.09);
   border-radius: 12px;
   overflow: hidden;
-  min-height: 148px;
+  min-height: 160px;
+  display: flex;
+  align-items: stretch;
 }
 
+/* Text content — takes ~70% of width so image has room */
 .promoCardContent {
+  position: relative;
+  z-index: 1;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
-  padding: 20px 20px 20px 22px;
+  gap: 10px;
+  padding: 22px 22px 22px 24px;
+  /* stop text from sliding under the image */
+  max-width: 68%;
 }
 
 .promoCardTitle {
   font-size: 15px;
   font-weight: 700;
-  color: #f7f7f8;
+  color: #ffffff;
   line-height: 1.3;
   margin: 0;
 }
 
 .promoCardDesc {
   font-size: 12px;
-  color: #7e8493;
-  line-height: 1.5;
+  color: #a0a0a0;
+  line-height: 1.55;
   margin: 0;
 }
 
+/* Outline ghost button — matches design spec */
 .promoBtn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   align-self: flex-start;
-  margin-top: 4px;
-  padding: 7px 14px;
-  background: rgba(208, 217, 251, 0.10);
-  border: 1px solid rgba(208, 217, 251, 0.15);
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid #444;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #d0d9fb;
+  color: #ffffff;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
 }
 .promoBtn:hover {
-  background: rgba(208, 217, 251, 0.16);
-  border-color: rgba(208, 217, 251, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #666;
 }
 
-.promoCardImgWrap {
-  width: 120px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(208, 217, 251, 0.04);
-  border-left: 1px solid rgba(208, 217, 251, 0.07);
-}
-
-.promoCardImgPlaceholder {
-  font-size: 40px;
-  opacity: 0.55;
+/* Production image — absolutely positioned on the right */
+.promoCardImg {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+  opacity: 0.82;
+  pointer-events: none;
   user-select: none;
 }
 
 
 /* ════════════════════════════════════════════════════════════════════
-   Community Section
+   Community Section  (Figma node 1992-72802)
    ════════════════════════════════════════════════════════════════════ */
+
+/* Outer row — no card wrapper, sits directly on page background */
 .communitySection {
-  display: grid;
-  grid-template-columns: 220px 1fr 240px;
-  gap: 20px;
-  background: #1c1e24;
-  border: 1px solid rgba(208, 217, 251, 0.10);
-  border-radius: 14px;
-  padding: 28px 24px;
-  align-items: start;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  min-width: 0;
 }
 
+/* Left column */
 .communityLeft {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px;
+}
+
+.communityText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 420px;
 }
 
 .communityTitle {
-  font-size: 17px;
+  font-size: 24px;
   font-weight: 700;
   color: #f7f7f8;
-  line-height: 1.3;
+  line-height: 1.35;
   margin: 0;
 }
 
 .communityDesc {
-  font-size: 12.5px;
-  color: #7e8493;
-  line-height: 1.55;
+  font-size: 16px;
+  color: #bbbcbe;
+  line-height: 1.4;
   margin: 0;
 }
 
 .communityLinks {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 4px;
+  gap: 0;
 }
 
 .communityLink {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  color: #d0d9fb;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f9f9f9;
   text-decoration: none;
-  transition: color 0.15s;
+  padding: 13px 11px;
+  border-radius: 8px;
+  transition: background 0.15s;
 }
-.communityLink:hover { color: #fff; }
+.communityLink:hover { background: rgba(208, 217, 251, 0.06); }
+.communityLinkIcon { flex-shrink: 0; }
 
-/* Video player */
-.communityVideo {
+/* Center + Right carousel */
+.communityCarousel {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 8px;
+  height: 560px;
+  flex-shrink: 0;
 }
 
-.videoPlayer {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #0a0a0d;
-  border-radius: 10px;
+/* ── Live YouTube iframe embed (9:16 vertical) ─────────────────────── */
+.shortsPlayer {
+  width: 315px;
+  height: 560px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(208, 217, 251, 0.08);
+  flex-shrink: 0;
+  background: #0a0a0d;
 }
 
-.videoPlayerBg {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 40%, rgba(80, 80, 140, 0.18), transparent 70%);
+/* iframe fills the container exactly — border-radius clips via parent overflow:hidden */
+.shortsIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
 }
 
-.videoPlayOverlay {
-  position: absolute;
-  inset: 0;
+/* ── Creator list (right column of carousel) ──────────────────────── */
+.creatorList {
+  flex: 1;
+  min-width: 0;
+  background: #18191d;
+  border-radius: 12px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.creatorList::-webkit-scrollbar { width: 3px; }
+.creatorList::-webkit-scrollbar-track { background: transparent; }
+.creatorList::-webkit-scrollbar-thumb {
+  background: rgba(208,217,251,0.10);
+  border-radius: 2px;
 }
 
-.videoPlayBtn {
+.creatorItem {
   display: flex;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
+  padding: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.15s, opacity 0.15s;
-  opacity: 0.92;
-  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.6));
+  transition: background 0.12s;
+  flex-shrink: 0;
 }
-.videoPlayBtn:hover {
-  transform: scale(1.08);
-  opacity: 1;
+.creatorItem:hover { background: rgba(208, 217, 251, 0.06); }
+.creatorItemActive { background: rgba(187, 194, 209, 0.16); }
+.creatorItemActive:hover { background: rgba(187, 194, 209, 0.20); }
+
+.creatorThumbWrap {
+  width: 63px;
+  height: 109px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #2b2d33;
 }
 
-/* Spotlight list */
-.spotlightList {
+.creatorThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.creatorContent {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 4px 0;
 }
 
-.spotlightItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.12s;
-}
-.spotlightItem:hover {
-  background: rgba(208, 217, 251, 0.05);
-}
-
-.spotlightAvatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+.creatorName {
+  font-size: 16px;
   font-weight: 700;
-  color: #000;
-  user-select: none;
-}
-
-.spotlightContent {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.spotlightName {
-  font-size: 12.5px;
-  font-weight: 600;
   color: #f7f7f8;
+  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.spotlightDesc {
-  font-size: 11.5px;
-  color: #7e8493;
+.creatorDesc {
+  font-size: 14px;
+  color: #bbbcbe;
   line-height: 1.4;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1618,4 +2023,347 @@
 .footerLangBtn:hover {
   background: rgba(208, 217, 251, 0.08);
   color: #d0d9fb;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   New-User Experiences layout  (isNewUser === true)
+   ════════════════════════════════════════════════════════════════════ */
+
+/* 2-column responsive grid */
+.newUserExpGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .newUserExpGrid { grid-template-columns: 1fr; }
+}
+
+/* ── Card 1: Starter Place ───────────────────────────────────────── */
+.starterCard {
+  background: #1c1e24;
+  border: 1px solid rgba(208, 217, 251, 0.09);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.starterCard:hover { border-color: rgba(208, 217, 251, 0.20); }
+
+.starterCardBody {
+  flex: 1;
+  padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.starterCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.starterCardLeading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.starterThumbWrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(208, 217, 251, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.starterCardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f7f7f8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Highlight stat */
+.starterStatHighlight {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.starterStatLabel { font-size: 12px; color: #7e8493; }
+.starterStatValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: #f7f7f8;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+/* Secondary stats list */
+.starterStatList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.starterStatRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.starterStatRowLabel { font-size: 12px; color: #7e8493; }
+.starterStatRowValue { font-size: 12px; font-weight: 600; color: #d5d7dd; }
+
+/* Footer action */
+.starterCardFooter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(208, 217, 251, 0.08);
+  border-radius: 0 0 12px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.starterCardFooter:hover { background: rgba(208, 217, 251, 0.05); }
+.starterFooterIcon { color: #0e72ed; flex-shrink: 0; }
+.starterFooterText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.starterFooterTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f7f7f8;
+}
+.starterFooterDesc {
+  font-size: 11px;
+  color: #7e8493;
+  line-height: 1.4;
+}
+.starterFooterChevron { color: rgba(208, 217, 251, 0.35); flex-shrink: 0; }
+
+/* ── Card 2: Watchlist empty state ──────────────────────────────── */
+.watchlistCard {
+  background: #1c1e24;
+  border: 1px solid rgba(208, 217, 251, 0.09);
+  border-radius: 12px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  min-height: 300px;
+  gap: 0;
+  transition: border-color 0.15s;
+}
+.watchlistCard:hover { border-color: rgba(208, 217, 251, 0.18); }
+
+.watchlistCardClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  color: rgba(208, 217, 251, 0.4);
+  transition: background 0.12s, color 0.12s;
+  cursor: pointer;
+}
+.watchlistCardClose:hover { background: rgba(208, 217, 251, 0.08); color: #d5d7dd; }
+
+/* Tilted gamepad illustration */
+.watchlistIllo {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: rgba(208, 217, 251, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-8deg);
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.watchlistIlloIcon { color: rgba(208, 217, 251, 0.5); }
+
+.watchlistCardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f7f7f8;
+  margin: 0 0 6px;
+}
+.watchlistCardDesc {
+  font-size: 12px;
+  color: #7e8493;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 220px;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   All Tools flyout panel
+   Sidebar is 220px wide — panel sits immediately to its right.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Transparent backdrop — catches clicks outside the panel */
+.allToolsBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: transparent;
+}
+
+/* Panel */
+.allToolsPanel {
+  position: fixed;
+  top: 0;
+  left: 220px;          /* flush with the right edge of the sidebar */
+  width: 360px;
+  height: 100vh;
+  background: #111215;
+  border-right: 1px solid rgba(208, 217, 251, 0.10);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.55);
+  /* Slide in from the left */
+  animation: allToolsSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.allToolsPanel::-webkit-scrollbar { width: 4px; }
+.allToolsPanel::-webkit-scrollbar-track { background: transparent; }
+.allToolsPanel::-webkit-scrollbar-thumb { background: rgba(208, 217, 251, 0.12); border-radius: 2px; }
+
+@keyframes allToolsSlideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Header */
+.allToolsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.10);
+  flex-shrink: 0;
+}
+.allToolsTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f7f7f8;
+  letter-spacing: -0.1px;
+}
+.allToolsClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  color: rgba(208, 217, 251, 0.5);
+  transition: background 0.12s, color 0.12s;
+  cursor: pointer;
+}
+.allToolsClose:hover { background: rgba(208, 217, 251, 0.08); color: #d5d7dd; }
+
+/* Scrollable content area */
+.allToolsContent {
+  padding: 8px 0 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sections */
+.allToolsSection {
+  padding: 16px 20px 20px;
+  border-bottom: 1px solid rgba(208, 217, 251, 0.08);
+}
+.allToolsSectionLast {
+  border-bottom: none;
+}
+
+/* 2-column grid inside each section */
+.allToolsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+
+/* Individual column */
+.allToolsCol {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Category heading (e.g. "Creations", "Store") */
+.allToolsCatHeader {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(208, 217, 251, 0.45);
+  margin-bottom: 6px;
+  padding-top: 4px;
+}
+
+/* Base link */
+.allToolsLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #a0a0a0;
+  padding: 4px 0;
+  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.12s;
+  white-space: nowrap;
+}
+.allToolsLink:hover { color: #f7f7f8; }
+
+/* Vertical gap before a standalone link (e.g. "API Keys" after the Creations sub-list) */
+.allToolsLinkTop { margin-top: 10px; }
+
+/* Standalone links in col 2 of section 3 — no category header, so push them down slightly */
+.allToolsStandaloneLink { padding: 5px 0; }
+
+/* External link badge */
+.allToolsLinkExternal { color: #a0a0a0; }
+.allToolsExternalIcon  { color: rgba(208, 217, 251, 0.35); flex-shrink: 0; }
+
+/* Inline flex wrapper for link + badge */
+.allToolsLinkWithBadge { gap: 6px; }
+
+/* "New" badge */
+.allToolsNewBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  background: #0e72ed;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 20px;
+  line-height: 1.5;
+  flex-shrink: 0;
 }

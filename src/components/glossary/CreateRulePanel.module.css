@@ -1,12 +1,11 @@
-/* ── Overlay (full viewport below the app bar) ─────────────────── */
+/* ── Overlay (full viewport, transparent — only dims content) ──── */
 .overlay {
   position: fixed;
-  top: 40px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 100;
-  /* Block pointer events only when open */
   pointer-events: none;
 }
 
@@ -24,26 +23,31 @@
 }
 
 .backdropOpen {
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.6);
 }
 
-/* ── Panel ───────────────────────────────────────────────────────── */
+/* ── Panel — full-height floating drawer, 16px gap from every edge ── */
+/*
+  Payments reference: top: 16px, bottom: 16px, right: 16px
+  Full-height card with internal scroll + sticky footer.
+*/
 .panel {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  bottom: 12px;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  /* No max-height — top+bottom define the height */
   width: 360px;
-  background: #191a1f;
-  border-radius: var(--radius-lg);
+  background: #1b1c22;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
-  /* Start off-screen to the right */
-  transform: translateX(calc(100% + 24px));
+  /* Start off-screen; 16px right gap included in the offset */
+  transform: translateX(calc(100% + 32px));
   box-shadow: none;
-  will-change: transform;
+  will-change: transform, box-shadow;
   transition:
     transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 400ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -52,25 +56,30 @@
 .panelOpen {
   transform: translateX(0);
   box-shadow:
-    0 32px 64px rgba(0, 0, 0, 0.5),
-    0 8px 24px rgba(0, 0, 0, 0.35);
+    0 24px 64px rgba(0, 0, 0, 0.65),
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(208, 217, 251, 0.07);
 }
 
-/* ── Header (56px) ───────────────────────────────────────────────── */
+/* ── Header (56px, matches Figma .SheetHeader) ───────────────────── */
+/*
+  Figma:  leading px-[20px], trailing px-[12px] py-[8px]
+  Title: font-size 20px, font-weight 700, color #f7f7f8, letter-spacing -0.2px
+*/
 .header {
   height: 56px;
   min-height: 56px;
   display: flex;
   align-items: center;
   padding: 8px 12px 8px 20px;
-  border-bottom: 1px solid var(--shift-300);
+  border-bottom: 1px solid rgba(208, 217, 251, 0.10);
 }
 
 .title {
   flex: 1;
   font-size: 20px;
   font-weight: 700;
-  color: var(--content-emphasis);
+  color: #f7f7f8;
   letter-spacing: -0.2px;
   line-height: 1.2;
 }
@@ -81,22 +90,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md);
-  color: var(--content-default);
+  border-radius: 8px;
+  color: rgba(208, 217, 251, 0.6);
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
 }
 
 .closeBtn:hover {
-  background: var(--shift-300);
-  color: var(--content-emphasis);
+  background: rgba(208, 217, 251, 0.10);
+  color: #f7f7f8;
 }
 
-/* ── Body (scrollable, grows to fill remaining space) ────────────── */
+/* ── Body — scrollable, grows to fill remaining space ────────────── */
 .body {
   flex: 1;
+  min-height: 0;        /* required for flex children to shrink+scroll */
   overflow-y: auto;
 }
+
+.body::-webkit-scrollbar { width: 4px; }
+.body::-webkit-scrollbar-thumb { background: rgba(208,217,251,0.12); border-radius: 2px; }
 
 /* ── Form content ────────────────────────────────────────────────── */
 .formContent {
@@ -119,41 +132,44 @@
   gap: 4px;
   font-size: 14px;
   font-weight: 700;
-  color: var(--content-emphasis);
+  color: #f7f7f8;
   line-height: 1.4;
   white-space: nowrap;
 }
 
 .required {
-  color: var(--content-default);
+  color: rgba(208, 217, 251, 0.5);
 }
 
 /* ── Text input ──────────────────────────────────────────────────── */
+/*
+  Figma: border #393B44, slightly darker background for inset feel
+*/
 .textInput {
   width: 100%;
   height: 40px;
   padding: 0 12px;
-  background: transparent;
-  border: 1px solid rgba(208, 217, 251, 0.4);
-  border-radius: var(--radius-md);
-  color: var(--content-emphasis);
+  background: rgba(208, 217, 251, 0.04);
+  border: 1px solid #3b3d47;
+  border-radius: 8px;
+  color: #f7f7f8;
   font-size: 14px;
   font-family: var(--font-sans);
   font-weight: 400;
   line-height: 1.4;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.15s;
 }
 
-.textInput::placeholder { color: var(--content-muted); }
-.textInput:focus        { border-color: var(--accent); }
+.textInput::placeholder { color: rgba(208, 217, 251, 0.35); }
+.textInput:focus        { border-color: var(--accent); background: rgba(208, 217, 251, 0.06); }
 
 /* ── Helper text ─────────────────────────────────────────────────── */
 .helperText {
   font-size: 10px;
   font-weight: 600;
-  color: var(--content-default);
+  color: rgba(208, 217, 251, 0.5);
   line-height: 1.4;
 }
 
@@ -165,11 +181,17 @@
   height: 24px;
 }
 
+/*
+  Figma Switch:
+  - OFF: dark neutral gray track
+  - ON:  Roblox action blue #00a2ff (Switch uses brighter blue than general accent)
+  - Thumb: white pill, 16×16 with 2px inset
+*/
 .toggleTrack {
   width: 36px;
   height: 20px;
   border-radius: 9999px;
-  background: rgba(208, 217, 251, 0.16);
+  background: rgba(208, 217, 251, 0.18);
   position: relative;
   flex-shrink: 0;
   cursor: pointer;
@@ -177,7 +199,7 @@
 }
 
 .toggleOn {
-  background: var(--accent);
+  background: #00a2ff;
 }
 
 .toggleThumb {
@@ -190,9 +212,9 @@
   background: #fff;
   pointer-events: none;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Slide the thumb when track has the .toggleOn class */
 .toggleOn .toggleThumb {
   transform: translateX(16px);
 }
@@ -200,7 +222,7 @@
 .toggleLabel {
   font-size: 14px;
   font-weight: 700;
-  color: var(--content-emphasis);
+  color: #f7f7f8;
   line-height: 1.4;
   user-select: none;
 }
@@ -215,10 +237,10 @@
   width: 100%;
   height: 40px;
   padding: 0 36px 0 12px;
-  background: transparent;
-  border: 1px solid rgba(208, 217, 251, 0.16);
-  border-radius: var(--radius-md);
-  color: var(--content-emphasis);
+  background: rgba(208, 217, 251, 0.04);
+  border: 1px solid #3b3d47;
+  border-radius: 8px;
+  color: #f7f7f8;
   font-size: 14px;
   font-family: var(--font-sans);
   font-weight: 400;
@@ -231,7 +253,7 @@
 }
 
 .selectInput:focus    { border-color: var(--accent); }
-.selectInput option   { background: #191a1f; color: var(--content-emphasis); }
+.selectInput option   { background: #1b1c22; color: #f7f7f8; }
 
 .selectChevron {
   position: absolute;
@@ -239,7 +261,7 @@
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  color: var(--content-default);
+  color: rgba(208, 217, 251, 0.5);
   display: flex;
   align-items: center;
 }
@@ -255,9 +277,9 @@
   align-items: center;
   min-height: 40px;
   padding: 4px 8px;
-  background: transparent;
-  border: 1px solid rgba(208, 217, 251, 0.16);
-  border-radius: var(--radius-md);
+  background: rgba(208, 217, 251, 0.04);
+  border: 1px solid #3b3d47;
+  border-radius: 8px;
   cursor: pointer;
   gap: 4px;
   transition: border-color 0.15s;
@@ -277,20 +299,26 @@
 
 .placeholder {
   font-size: 14px;
-  color: var(--content-muted);
+  color: rgba(208, 217, 251, 0.35);
   padding: 2px 0;
 }
 
+/*
+  Figma Chip (the "Japanese ×" pill):
+  - dark solid background, not a translucent float
+  - small ×, rounded 6px
+*/
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  background: rgba(208, 217, 251, 0.12);
-  border-radius: var(--radius-sm);
+  background: #2c2e38;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  border-radius: 6px;
   padding: 2px 4px 2px 8px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--content-emphasis);
+  color: #f7f7f8;
   white-space: nowrap;
 }
 
@@ -302,14 +330,14 @@
   justify-content: center;
   font-size: 14px;
   line-height: 1;
-  color: var(--content-muted);
-  border-radius: 2px;
+  color: rgba(208, 217, 251, 0.5);
+  border-radius: 3px;
   transition: color 0.1s, background 0.1s;
 }
 
 .chipRemove:hover {
-  color: var(--content-emphasis);
-  background: rgba(208, 217, 251, 0.1);
+  color: #f7f7f8;
+  background: rgba(208, 217, 251, 0.12);
 }
 
 .multiSelectTrailing {
@@ -323,16 +351,16 @@
 .clearBtn {
   font-size: 12px;
   font-weight: 600;
-  color: var(--content-default);
+  color: rgba(208, 217, 251, 0.5);
   padding: 2px 6px;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   transition: color 0.15s, background 0.15s;
   white-space: nowrap;
 }
 
 .clearBtn:hover {
-  color: var(--content-emphasis);
-  background: var(--shift-300);
+  color: #f7f7f8;
+  background: rgba(208, 217, 251, 0.10);
 }
 
 /* Dropdown list */
@@ -341,13 +369,13 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: #1e1e26;
-  border: 1px solid rgba(208, 217, 251, 0.16);
-  border-radius: var(--radius-md);
+  background: #22232b;
+  border: 1px solid #3b3d47;
+  border-radius: 8px;
   z-index: 200;
   max-height: 200px;
   overflow-y: auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
 }
 
 .dropdownItem {
@@ -356,23 +384,23 @@
   justify-content: space-between;
   padding: 8px 12px;
   font-size: 14px;
-  color: var(--content-default);
+  color: rgba(208, 217, 251, 0.75);
   cursor: pointer;
   transition: background 0.1s, color 0.1s;
 }
 
-.dropdownItem:hover        { background: var(--shift-300); color: var(--content-emphasis); }
-.dropdownItemSelected      { color: var(--content-emphasis); font-weight: 600; }
+.dropdownItem:hover        { background: rgba(208, 217, 251, 0.08); color: #f7f7f8; }
+.dropdownItemSelected      { color: #f7f7f8; font-weight: 600; }
 
 /* ── Textarea (Notes) ────────────────────────────────────────────── */
 .textarea {
   width: 100%;
   min-height: 96px;
   padding: 8px 12px;
-  background: transparent;
-  border: 1px solid rgba(208, 217, 251, 0.4);
-  border-radius: var(--radius-md);
-  color: var(--content-emphasis);
+  background: rgba(208, 217, 251, 0.04);
+  border: 1px solid #3b3d47;
+  border-radius: 8px;
+  color: #f7f7f8;
   font-size: 14px;
   font-family: var(--font-sans);
   font-weight: 400;
@@ -383,60 +411,55 @@
   transition: border-color 0.15s;
 }
 
-.textarea::placeholder { color: var(--content-muted); }
+.textarea::placeholder { color: rgba(208, 217, 251, 0.35); }
 .textarea:focus        { border-color: var(--accent); }
 
-/* ── Actions bar (80px, sticky bottom) ───────────────────────────── */
+/* ── Actions bar — sticky footer, never squishes ─────────────────── */
+/*
+  Payments ref: border-top separator, padding 16px 24px, buttons full-width
+*/
 .actions {
-  min-height: 80px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 20px;
-  position: relative;
+  flex-shrink: 0;
+  padding: 16px 24px;
+  border-top: 1px solid #3b3d47;
+  background: #1b1c22;
 }
 
-.actionsDivider {
-  position: absolute;
-  top: 0;
-  left: 1px;
-  right: 1px;
-  height: 1px;
-  background: var(--shift-300);
-}
+/* Remove the old absolutely-positioned divider (now using border-top on .actions) */
+.actionsDivider { display: none; }
 
 .actionsRow {
   display: flex;
   gap: 8px;
 }
 
+/* Save — Primary / Emphasis */
 .btnSave {
   flex: 1;
   height: 40px;
   background: var(--accent);
   color: #fff;
   font-size: 14px;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  transition: background 0.15s;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: 8px;
+  transition: background 0.15s, transform 0.1s;
 }
 
-.btnSave:hover {
-  background: var(--accent-hover);
-}
+.btnSave:hover  { background: var(--accent-hover); }
+.btnSave:active { transform: scale(0.98); }
 
+/* Cancel — Standard (dark solid surface) */
 .btnCancel {
   flex: 1;
   height: 40px;
-  background: var(--shift-300);
-  color: var(--content-emphasis);
+  background: #2c2e38;
+  color: #f7f7f8;
   font-size: 14px;
   font-weight: 600;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  transition: background 0.15s, border-color 0.15s;
+  border-radius: 8px;
+  border: 1px solid rgba(208, 217, 251, 0.14);
+  transition: background 0.15s;
 }
 
-.btnCancel:hover {
-  background: var(--shift-400);
-}
+.btnCancel:hover { background: #343642; }
